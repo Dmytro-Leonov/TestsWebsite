@@ -1,4 +1,4 @@
-# Features of Test Website that I'd like to implement
+# Features of Tests Website that I'd like to implement
 
 Features that may not come to life in this project, but I'd still like to implement, are indicated with a question mark
 
@@ -17,6 +17,9 @@ Features that may not come to life in this project, but I'd still like to implem
     - [ ] Add questions to pool
     - [ ] Edit questions in pool
     - [ ] Delete questions from pool
+  - [ ] Create groups of students and assign them to tests
+    - [ ] Add students to group
+    - [ ] Delete students from group
   - **Create test:**
     - [ ] Add questions from pool to test
     - [ ] Edit questions in test
@@ -27,15 +30,18 @@ Features that may not come to life in this project, but I'd still like to implem
       - [ ] End date
       - [ ] Time limit
       - [ ] Give extra time
+      - [ ] Allowed attempts
       - [ ] Shuffle questions
       - [ ] Shuffle answers
-      - [ ] Show results after test
+      - [ ] Show user answers after test
       - [ ] Show correct answers after test
+      - [ ] Show score after test
+      - [ ] Show time taken after test
   - [ ] Delete test 
   - View test results:
     - [ ] General results
-    - [ ] Mark tests completed from the same IP address
-    - [ ] Mark tests completed from the same device
+    - [ ] ? Mark tests completed from the same IP address
+    - [ ] ? Mark tests completed from the same device
     - **Results for a specific user:**
       - [ ] Total score for test
       - [ ] Score for each question
