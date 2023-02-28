@@ -37,7 +37,7 @@
       - [ ] [1] Shuffle questions
       - [ ] [1] Shuffle answers
       - [ ] [2] Show user answers after test
-      - [ ] [3]  Show correct answers after test
+      - [ ] [3] Show correct answers after test
       - [ ] [1] Show score after test
       - [ ] [1] Show time taken after test
   - [ ] [1] Delete test 
