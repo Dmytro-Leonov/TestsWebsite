@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'debug_toolbar',
     'rest_framework',
+    'knox',
 ]
 
 MIDDLEWARE = [
