@@ -3,6 +3,8 @@ from django.contrib.auth.models import (
     BaseUserManager,
     AbstractBaseUser
 )
+from django.core.validators import MinLengthValidator
+import uuid
 
 
 class UserManager(BaseUserManager):
@@ -34,7 +36,15 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    full_name = models.CharField(max_length=50)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+    full_name = models.CharField(
+        max_length=50,
+        validators=[MinLengthValidator(3)]
+    )
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
