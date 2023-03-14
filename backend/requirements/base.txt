@@ -1,12 +1,12 @@
-Django==4.1.7
+Django
 django-environ
 psycopg2
-djangorestframework==3.14.0
+djangorestframework
 
-django-filter==22.1
+django-filter
 django-extensions
 django-cors-headers
 
 whitenoise
 
-requests==2.28.2
+requests
