@@ -1,0 +1,12 @@
+Django==4.1.7
+django-environ
+psycopg2
+djangorestframework==3.14.0
+
+django-filter==22.1
+django-extensions
+django-cors-headers
+
+whitenoise
+
+requests==2.28.2
