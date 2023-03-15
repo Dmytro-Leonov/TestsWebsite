@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.http import urlencode
 
 from knox.models import AuthToken
 
@@ -18,10 +19,12 @@ GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo'
 
 
 def knox_login(*, user: User) -> HttpResponse:
-    response = redirect(settings.FRONTEND_DOMAIN)
-
     token = AuthToken.objects.create(user)[1]
-    response.set_cookie("token", token)
+
+    login_url = f'{settings.FRONTEND_DOMAIN}/login'
+    params = urlencode({'token': token})
+
+    response = redirect(f'{login_url}?{params}')
 
     return response
 
@@ -45,8 +48,8 @@ def google_validate_id_token(*, id_token: str) -> bool:
 
 
 def google_get_access_token(*, code: str) -> str:
-    domain = settings.BASE_BACKEND_URL
-    api_uri = reverse('api:v1:auth:login:google')
+    domain = settings.APP_DOMAIN
+    api_uri = reverse('api:authentication:google')
     redirect_uri = f'{domain}{api_uri}'
 
     data = {

@@ -11,5 +11,5 @@ login_patterns = [
 
 urlpatterns = [
     path("me/", UserMeApi.as_view(), name="me"),
-    path("login/", include(login_patterns), name="login"),
+    path("login/", include(login_patterns)),
 ]
