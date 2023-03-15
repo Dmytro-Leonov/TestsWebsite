@@ -145,6 +145,7 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "tests_website.api.exception_handlers.drf_default_with_modifications_exception_handler",
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
 
 APP_DOMAIN = env("APP_DOMAIN", default="http://localhost:8000")

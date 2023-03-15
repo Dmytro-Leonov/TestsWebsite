@@ -2,11 +2,10 @@ Django
 django-environ
 psycopg2
 djangorestframework
-
 django-filter
 django-extensions
 django-cors-headers
-
+coreapi
+django-rest-knox
 whitenoise
-
 requests

@@ -22,8 +22,8 @@ class TriggerErrorApi(APIView):
 class TriggerValidateUniqueErrorApi(APIView):
     def get(self, request):
         # Due to the fiddling with transactions, this example a different API
-        user_create(email="unique@hacksoft.io", password="user")
-        user_create(email="unique@hacksoft.io", password="user")
+        user_create(email="unique@hacksoft.io", full_name="user")
+        user_create(email="unique@hacksoft.io", full_name="user")
 
         return Response()
 
@@ -31,5 +31,3 @@ class TriggerValidateUniqueErrorApi(APIView):
 class TriggerUnhandledExceptionApi(APIView):
     def get(self, request):
         raise Exception("Oops")
-
-        return Response()

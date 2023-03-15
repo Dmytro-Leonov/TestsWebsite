@@ -9,7 +9,6 @@ from tests_website.users.models import User
 from tests_website.users.selectors import user_list
 
 
-# TODO: When JWT is resolved, add authenticated version
 class UserListApi(APIView):
     class Pagination(LimitOffsetPagination):
         default_limit = 1
@@ -18,11 +17,12 @@ class UserListApi(APIView):
         id = serializers.IntegerField(required=False)
         is_admin = serializers.BooleanField(required=False, allow_null=True, default=None)
         email = serializers.EmailField(required=False)
+        full_name = serializers.CharField(required=False)
 
     class OutputSerializer(serializers.ModelSerializer):
         class Meta:
             model = User
-            fields = ("id", "email", "is_admin")
+            fields = ("id", "full_name", "email", "is_admin")
 
     def get(self, request):
         # Make sure the filters are valid, if passed
