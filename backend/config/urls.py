@@ -6,7 +6,6 @@ from django.urls import include, path
 from rest_framework.documentation import include_docs_urls
 
 
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(("tests_website.api.urls", "api"))),
