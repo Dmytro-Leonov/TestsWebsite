@@ -31,8 +31,8 @@ class GoogleLoginApi(APIView):
 
         validated_data = serializer.validated_data
 
-        code = validated_data.get('code')
-        error = validated_data.get('error')
+        code = validated_data.get("code")
+        error = validated_data.get("error')
 
         if error or not code:
             login_url = f'{settings.FRONTEND_DOMAIN}/login'

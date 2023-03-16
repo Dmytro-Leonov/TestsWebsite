@@ -40,7 +40,7 @@ LOCAL_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
-    'knox',
+    "knox",
     "django_filters",
     "corsheaders",
     "django_extensions",
