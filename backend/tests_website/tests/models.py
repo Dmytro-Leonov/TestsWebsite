@@ -1,10 +1,11 @@
 from django.db import models
 from django.core.validators import MinLengthValidator, MinValueValidator, MaxValueValidator
+
 from tests_website.common.models import BaseModel
 
 
 class Test(BaseModel):
-    creator = models.ForeignKey("auth.User", on_delete=models.CASCADE, related_name="created_tests")
+    user = models.ForeignKey("auth.User", on_delete=models.CASCADE, related_name="created_tests")
 
     name = models.CharField(max_length=100, validators=[MinLengthValidator(1)])
     description = models.TextField(max_length=500, blank=True)
@@ -16,8 +17,10 @@ class Test(BaseModel):
     show_score_after_test = models.BooleanField()
     show_answers_after_test = models.BooleanField()
 
+    score = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
+
     def __str__(self):
         return self.name
 
     class Meta:
-        unique_together = ("creator", "name")
+        unique_together = ("user", "name")
