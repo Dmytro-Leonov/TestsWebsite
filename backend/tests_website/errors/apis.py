@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 
 from tests_website.api.exception_handlers import (
     drf_default_with_modifications_exception_handler,
-    hacksoft_proposed_exception_handler,
+    custom_exception_handler,
 )
 from tests_website.errors.services import trigger_errors
 from tests_website.users.services import user_create
@@ -13,7 +13,7 @@ class TriggerErrorApi(APIView):
     def get(self, request):
         data = {
             "drf_default_with_modifications": trigger_errors(drf_default_with_modifications_exception_handler),
-            "hacksoft_proposed": trigger_errors(hacksoft_proposed_exception_handler),
+            "custom_exception_handler": trigger_errors(custom_exception_handler),
         }
 
         return Response(data)
