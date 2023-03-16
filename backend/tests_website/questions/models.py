@@ -30,7 +30,13 @@ class Question(BaseModel):
     is_original = models.BooleanField(default=True)
 
     # order in question pool calculated using lexorank algorithm
-    order = models.CharField()
+    order = models.CharField(db_index=True)
+
+    class QuestionType(models.TextChoices):
+        SINGLE_CHOICE = "SINGLE_CHOICE", "Single choice"
+        MULTIPLE_CHOICE = "MULTIPLE_CHOICE", "Multiple choice"
+
+    type = models.CharField(max_length=20, choices=QuestionType.choices, default=QuestionType.SINGLE_CHOICE)
 
     def __str__(self):
         return self.question
