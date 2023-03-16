@@ -32,13 +32,13 @@ class GoogleLoginApi(APIView):
         validated_data = serializer.validated_data
 
         code = validated_data.get("code")
-        error = validated_data.get("error')
+        error = validated_data.get("error")
 
         if error or not code:
-            login_url = f'{settings.FRONTEND_DOMAIN}/login'
-            params = urlencode({'error': error})
+            login_url = f"{settings.FRONTEND_DOMAIN}/login"
+            params = urlencode({"error": error})
 
-            return redirect(f'{login_url}?{params}')
+            return redirect(f"{login_url}?{params}")
 
         access_token = google_get_access_token(code=code)
 

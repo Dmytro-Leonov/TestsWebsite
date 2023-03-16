@@ -73,17 +73,17 @@ def google_get_access_token(*, code: str) -> str:
 def google_get_user_info(*, access_token: str) -> Dict[str, Any]:
     response = requests.get(
         GOOGLE_USER_INFO_URL,
-        params={"access_token': access_token}
+        params={"access_token": access_token}
     )
 
     if not response.ok:
-        raise ValidationError('Failed to obtain user info from Google.')
+        raise ValidationError("Failed to obtain user info from Google.")
 
     user_data = response.json()
 
     profile_data = {
-        'email': user_data['email'],
-        'full_name': user_data.get('name'),
+        "email": user_data["email"],
+        "full_name": user_data.get("name"),
     }
 
     return profile_data
