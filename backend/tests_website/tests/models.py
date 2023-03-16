@@ -3,7 +3,6 @@ from django.core.validators import MinLengthValidator, MinValueValidator, MaxVal
 from tests_website.common.models import BaseModel
 
 
-# TODO: add question pool
 class Test(BaseModel):
     creator = models.ForeignKey("auth.User", on_delete=models.CASCADE, related_name="created_tests")
 
