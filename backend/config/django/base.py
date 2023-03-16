@@ -36,6 +36,8 @@ LOCAL_APPS = [
     "tests_website.api.apps.ApiConfig",
     "tests_website.users.apps.UsersConfig",
     "tests_website.errors.apps.ErrorsConfig",
+    "tests_website.tests.apps.TestsConfig",
+    "tests_website.questions.apps.QuestionsConfig",
 ]
 
 THIRD_PARTY_APPS = [
