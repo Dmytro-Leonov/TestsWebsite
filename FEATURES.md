@@ -20,22 +20,24 @@
     - [ ] [1] Add questions to pool
     - [ ] [1] Edit questions in pool
     - [ ] [1] Delete questions from pool
-  - [ ] [1] Create groups of students and assign them to tests
+  - [ ] **Create students group:**
     - [ ] [1] Add students to group
     - [ ] [1] Delete students from group
   - **Create test:**
     - [ ] [1] Add questions from pool to test
+    - [ ] [1] Assign groups to test
     - [ ] [1] Edit questions in test
     - [ ] [1] Delete questions from test
     - **Edit test settings:**
       - [ ] [1] Test name
+      - [ ] [1] Test description
       - [ ] [1] Start date
       - [ ] [1] End date
       - [ ] [1] Time limit
+      - [ ] [1] Shuffle answers
+      - [ ] [1] Shuffle questions
       - [ ] [1] Give extra time
       - [ ] [1] Allowed attempts
-      - [ ] [1] Shuffle questions
-      - [ ] [1] Shuffle answers
       - [ ] [2] Show user answers after test
       - [ ] [3] Show correct answers after test
       - [ ] [1] Show score after test
@@ -43,7 +45,7 @@
   - [ ] [1] Delete test 
   - View test results:
     - [ ] [1] General results
-    - [ ] [2]  Mark tests completed from the same IP address
+    - [ ] [2] Mark tests completed from the same IP address
     - [ ] [2] Mark tests completed from the same device
     - **Results for a specific user:**
       - [ ] [1] Total score for test
