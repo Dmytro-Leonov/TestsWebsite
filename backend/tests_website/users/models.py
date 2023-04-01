@@ -5,6 +5,7 @@ from django.contrib.auth.models import (
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.core.validators import MinLengthValidator
+from django.core.exceptions import ValidationError
 
 from tests_website.common.models import BaseModel
 
@@ -12,9 +13,9 @@ from tests_website.common.models import BaseModel
 class UserManager(BaseUserManager):
     def create_user(self, full_name, email, is_active=True, is_admin=False, password=None):
         if not full_name:
-            raise ValueError("Users must have a full name")
+            raise ValidationError("Users must have a full name")
         if not email:
-            raise ValueError("Users must have an email address")
+            raise ValidationError("Users must have an email address")
 
         user = self.model(
             full_name=full_name,

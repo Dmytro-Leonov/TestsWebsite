@@ -23,12 +23,3 @@ class BaseUserAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
-
-    def save_model(self, request, obj, form, change):
-        if change:
-            return super().save_model(request, obj, form, change)
-
-        try:
-            user_create(**form.cleaned_data)
-        except ValidationError as exc:
-            self.message_user(request, str(exc), messages.ERROR)

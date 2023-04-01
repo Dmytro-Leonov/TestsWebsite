@@ -1,11 +1,11 @@
 from django.db import models
 from django.core.validators import MinLengthValidator
 
-from common.models import BaseModel
+from tests_website.common.models import BaseModel
 
 
 class QuestionPool(BaseModel):
-    user = models.ForeignKey("auth.User", on_delete=models.CASCADE, related_name="created_question_pools")
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="created_question_pools")
 
     name = models.CharField(max_length=200, validators=[MinLengthValidator(1)])
 
@@ -30,7 +30,7 @@ class Question(BaseModel):
     is_original = models.BooleanField(default=True)
 
     # order in question pool calculated using lexorank algorithm
-    order = models.CharField(db_index=True)
+    order = models.CharField(max_length=256, db_index=True)
 
     class QuestionType(models.TextChoices):
         SINGLE_CHOICE = "SINGLE_CHOICE", "Single choice"
@@ -62,7 +62,7 @@ class Answer(BaseModel):
     is_correct = models.BooleanField()
 
     # order in question pool calculated using lexorank algorithm
-    order = models.CharField()
+    order = models.CharField(max_length=256, db_index=True)
 
     def __str__(self):
         return self.answer

@@ -10,7 +10,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(("tests_website.api.urls", "api"))),
     path("docs/", include_docs_urls(title="Test Website")),
+    path("silk/", include('silk.urls', namespace='silk'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 
 from config.settings.debug_toolbar.setup import DebugToolbarSetup  # noqa
 

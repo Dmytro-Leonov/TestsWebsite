@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from tests_website.tests.models import Test, TestQuestion
+
+admin.site.register(Test)
+admin.site.register(TestQuestion)

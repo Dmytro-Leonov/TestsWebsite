@@ -7,7 +7,12 @@ from tests_website.users.models import User
 
 
 def user_create(
-    *, full_name: str, email: str, is_active: bool = True, is_admin: bool = False, password: Optional[str] = None
+    *,
+    full_name: str,
+    email: str,
+    is_active: bool = True,
+    is_admin: bool = False,
+    password: Optional[str] = None
 ) -> User:
     user = User.objects.create_user(
         full_name=full_name, email=email, is_active=is_active, is_admin=is_admin, password=password
@@ -18,7 +23,7 @@ def user_create(
 
 @transaction.atomic
 def user_update(*, user: User, data) -> User:
-    non_side_effect_fields = ["full_name"]
+    non_side_effect_fields = ["full_name", "is_active", "is_admin"]
 
     user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)
 

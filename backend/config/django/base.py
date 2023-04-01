@@ -38,6 +38,7 @@ LOCAL_APPS = [
     "tests_website.errors.apps.ErrorsConfig",
     "tests_website.tests.apps.TestsConfig",
     "tests_website.questions.apps.QuestionsConfig",
+    "tests_website.subscriptions.apps.SubscriptionsConfig",
 ]
 
 THIRD_PARTY_APPS = [
@@ -46,6 +47,7 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "corsheaders",
     "django_extensions",
+    "silk",
 ]
 
 INSTALLED_APPS = [
@@ -59,6 +61,10 @@ INSTALLED_APPS = [
     *LOCAL_APPS,
 ]
 
+THIRD_PARTY_MIDDLEWARE = [
+    "silk.middleware.SilkyMiddleware",
+]
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -69,6 +75,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    *THIRD_PARTY_MIDDLEWARE,
 ]
 
 ROOT_URLCONF = "config.urls"
