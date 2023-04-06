@@ -1,3 +1,5 @@
+import uuid
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.core.validators import MinLengthValidator, MinValueValidator, MaxValueValidator
@@ -8,6 +10,8 @@ from django.db.models import UniqueConstraint
 
 
 class Test(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="created_tests")
 
     name = models.CharField(max_length=100, validators=[MinLengthValidator(1)])
@@ -47,7 +51,16 @@ class TestQuestion(BaseModel):
     order = models.CharField(max_length=256, blank=False, null=False, db_index=True)
 
     class Meta:
-        unique_together = [
-            ("test", "question"),
-            ("test", "order")
+        constraints = [
+            UniqueConstraint(
+                "test", "question",
+                name="unique_test_question",
+                violation_error_message="Each question can be added to test only once"
+            ),
+            UniqueConstraint(
+                "test", "order",
+                name="unique_test_question_order",
+                violation_error_message="An error occurred, refresh the page and try again"
+            )
         ]
+        unique_together = [("test", "question", "order")]
