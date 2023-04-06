@@ -20,10 +20,10 @@ def test_create(
     show_answers_after_test: bool = False,
     give_extra_time: bool = False,
 ):
-    if get_object(Test, user=user, name=name):
-        raise ValidationError({"name": "You have already created test with this name"})
+    # if get_object(Test, user=user, name=name):
+    #     raise ValidationError({"name": "You have already created test with this name"})
 
-    test = Test.objects.create(
+    test = Test(
         user=user,
         name=name,
         description=description,

@@ -1,7 +1,10 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.core.validators import MinLengthValidator, MinValueValidator, MaxValueValidator
 
 from tests_website.common.models import BaseModel
+
+from django.db.models import UniqueConstraint
 
 
 class Test(BaseModel):
@@ -23,11 +26,17 @@ class Test(BaseModel):
 
     questions = models.ManyToManyField("questions.Question", through="TestQuestion", related_name="tests")
 
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                "user", "name",
+                name="unique_test_name",
+                violation_error_message="You have already created test with this name"
+            )
+        ]
+
     def __str__(self):
         return self.name
-
-    class Meta:
-        unique_together = ("user", "name")
 
 
 class TestQuestion(BaseModel):

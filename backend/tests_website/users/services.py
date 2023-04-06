@@ -23,7 +23,7 @@ def user_create(
 
 @transaction.atomic
 def user_update(*, user: User, data) -> User:
-    non_side_effect_fields = ["full_name", "is_active", "is_admin"]
+    non_side_effect_fields = ["full_name", "subscription", "is_active", "is_admin"]
 
     user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)
 

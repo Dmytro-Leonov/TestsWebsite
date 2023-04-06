@@ -8,6 +8,7 @@ from django.core.validators import MinLengthValidator
 from django.core.exceptions import ValidationError
 
 from tests_website.common.models import BaseModel
+from tests_website.subscriptions.selectors import subscription_get_default
 
 
 class UserManager(BaseUserManager):
@@ -17,9 +18,12 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValidationError("Users must have an email address")
 
+        default_subscription = subscription_get_default()
+
         user = self.model(
             full_name=full_name,
             email=self.normalize_email(email.lower()),
+            subscription=default_subscription,
             is_active=is_active,
             is_admin=is_admin
         )
@@ -59,6 +63,12 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
         max_length=255,
         validators=[MinLengthValidator(3)],
         blank=True
+    )
+
+    subscription = models.ForeignKey(
+        "subscriptions.Subscription",
+        on_delete=models.RESTRICT,
+        related_name="users"
     )
 
     is_active = models.BooleanField(default=True)
