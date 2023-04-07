@@ -10,8 +10,6 @@ from django.db.models import UniqueConstraint
 
 
 class Test(BaseModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="created_tests")
 
     name = models.CharField(max_length=100, validators=[MinLengthValidator(1)])
@@ -41,6 +39,24 @@ class Test(BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class GroupTest(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    group = models.ForeignKey("groups.Group", on_delete=models.CASCADE)
+    test = models.ForeignKey("Test", on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                "group", "test",
+                name="unique_group_test",
+                violation_error_message="This test is already added to this group"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.group} - {self.test}"
 
 
 class TestQuestion(BaseModel):

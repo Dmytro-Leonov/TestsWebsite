@@ -9,7 +9,7 @@ class Group(BaseModel):
     name = models.CharField(max_length=100, validators=[MinLengthValidator(1)])
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="created_groups")
 
-    members = models.ManyToManyField("users.User", through="GroupMember", related_name="groups")
+    members = models.ManyToManyField("users.User", through="GroupMember", related_name="member_of_groups")
 
     class Meta:
         constraints = [
@@ -25,8 +25,8 @@ class Group(BaseModel):
 
 
 class GroupMember(BaseModel):
-    group = models.ForeignKey("Group", on_delete=models.CASCADE)
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    group = models.ForeignKey("Group", on_delete=models.CASCADE, related_name="+")
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="+")
 
     class Meta:
         constraints = [
