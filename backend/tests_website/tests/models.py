@@ -44,8 +44,8 @@ class Test(BaseModel):
 
 
 class TestQuestion(BaseModel):
-    test = models.ForeignKey("Test", on_delete=models.CASCADE, related_name="has_questions")
-    question = models.ForeignKey("questions.Question", on_delete=models.CASCADE, related_name="in_tests")
+    test = models.ForeignKey("Test", on_delete=models.CASCADE)
+    question = models.ForeignKey("questions.Question", on_delete=models.CASCADE)
 
     # order in test calculated using lexorank algorithm
     order = models.CharField(max_length=256, blank=False, null=False, db_index=True)
@@ -64,3 +64,6 @@ class TestQuestion(BaseModel):
             )
         ]
         unique_together = [("test", "question", "order")]
+
+    def __str__(self):
+        return f"{self.test} - {self.question}"

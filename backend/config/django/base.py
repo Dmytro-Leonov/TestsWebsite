@@ -39,6 +39,7 @@ LOCAL_APPS = [
     "tests_website.tests.apps.TestsConfig",
     "tests_website.questions.apps.QuestionsConfig",
     "tests_website.subscriptions.apps.SubscriptionsConfig",
+    "tests_website.groups.apps.GroupsConfig",
 ]
 
 THIRD_PARTY_APPS = [
