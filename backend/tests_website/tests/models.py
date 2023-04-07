@@ -1,12 +1,11 @@
-import uuid
-
-from django.core.exceptions import ValidationError
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, MinValueValidator, MaxValueValidator
 
 from tests_website.common.models import BaseModel
 
-from django.db.models import UniqueConstraint
+import uuid
+from datetime import timedelta
 
 
 class Test(BaseModel):
@@ -14,7 +13,10 @@ class Test(BaseModel):
 
     name = models.CharField(max_length=100, validators=[MinLengthValidator(1)])
     description = models.TextField(max_length=500, blank=True)
-    time_limit_seconds = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    time_limit = models.DurationField(validators=[
+        MinValueValidator(timedelta(seconds=1)),
+        MaxValueValidator(timedelta(hours=24))
+    ])
     attempts = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
     number_of_questions = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
     score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
@@ -30,7 +32,7 @@ class Test(BaseModel):
 
     class Meta:
         constraints = [
-            UniqueConstraint(
+            models.UniqueConstraint(
                 "user", "name",
                 name="unique_test_name",
                 violation_error_message="You have already created test with this name"
@@ -43,12 +45,24 @@ class Test(BaseModel):
 
 class GroupTest(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     group = models.ForeignKey("groups.Group", on_delete=models.CASCADE)
     test = models.ForeignKey("Test", on_delete=models.CASCADE)
 
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+
+    is_visible = models.BooleanField()
+
+    def clean(self):
+        if self.start_date > self.end_date:
+            raise ValidationError({"end_date": "End date cannot be before start date"})
+
+        # if self.test.
+
     class Meta:
         constraints = [
-            UniqueConstraint(
+            models.UniqueConstraint(
                 "group", "test",
                 name="unique_group_test",
                 violation_error_message="This test is already added to this group"
@@ -68,12 +82,12 @@ class TestQuestion(BaseModel):
 
     class Meta:
         constraints = [
-            UniqueConstraint(
+            models.UniqueConstraint(
                 "test", "question",
                 name="unique_test_question",
                 violation_error_message="Each question can be added to test only once"
             ),
-            UniqueConstraint(
+            models.UniqueConstraint(
                 "test", "order",
                 name="unique_test_question_order",
                 violation_error_message="An error occurred, refresh the page and try again"
