@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, MinValueValidator, MaxValueValidator
 
 from tests_website.common.models import BaseModel
+from tests_website.common.utils import get_now
 
 import uuid
 from datetime import timedelta
@@ -54,12 +55,6 @@ class GroupTest(BaseModel):
 
     is_visible = models.BooleanField()
 
-    def clean(self):
-        if self.start_date > self.end_date:
-            raise ValidationError({"end_date": "End date cannot be before start date"})
-
-        # if self.test.
-
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -68,6 +63,18 @@ class GroupTest(BaseModel):
                 violation_error_message="This test is already added to this group"
             )
         ]
+
+    def clean(self):
+        if self.start_date > self.end_date:
+            raise ValidationError({"end_date": "End date cannot be before start date"})
+
+    @property
+    def has_started(self):
+        return self.start_date <= get_now()
+
+    @property
+    def has_ended(self):
+        return self.end_date <= get_now()
 
     def __str__(self):
         return f"{self.group} - {self.test}"
