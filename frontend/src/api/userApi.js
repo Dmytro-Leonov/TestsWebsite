@@ -10,7 +10,6 @@ const useUserApi = () => {
     getLoginInfo: async () => {
       const url = "auth/me/";
       const res = await axios.get(url);
-      dispatch(changeIsLoading(false))
       return res.data;
     },
     logout: async () => {
