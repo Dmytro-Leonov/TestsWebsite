@@ -32,7 +32,7 @@ const ThemeSwitch = () => {
   return (
     <button
       onClick={() => toggleTheme()}
-      className="rounded-md border border-gray-500 p-[7px] dark:border-gray-400"
+      className="rounded-md border border-gray-500 p-[7px] transition-colors hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white"
     >
       {currentTheme === "dark" ? <BsSunFill /> : <BsMoonStarsFill />}
     </button>

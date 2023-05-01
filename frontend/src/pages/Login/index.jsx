@@ -15,15 +15,13 @@ function Login() {
       navigate("/");
     } else if (token) {
       localStorage.setItem("token", token);
-      console.log("token", token);
-      toast.success("Logged in successfully");
-      navigate("/");
+      window.location.href = "/";
     } else {
       navigate("/");
     }
   }, [searchParams, navigate]);
 
-  return <></>;
+  return <>Verifying your login...</>;
 }
 
 export default Login;

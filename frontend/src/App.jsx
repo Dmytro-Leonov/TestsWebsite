@@ -31,6 +31,7 @@ const App = () => {
 
   useEffect(() => {
     const setUserInfo = async () => {
+      setIsLoading(true);
       const loginInfo = await userApi.getLoginInfo();
 
       dispatch(changeId(loginInfo.id));
@@ -43,6 +44,10 @@ const App = () => {
     const token = localStorage.getItem("token");
     if (token) {
       setUserInfo();
+    }
+    else
+    {
+      setIsLoading(false);
     }
   }, []);
 
