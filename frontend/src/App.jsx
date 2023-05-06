@@ -11,6 +11,9 @@ import { Spinner } from "flowbite-react";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Tests from "./pages/Tests";
+import Groups from "./pages/Groups";
+import Group from "./pages/Group";
 
 import settings from "./data/toastContainerSettings";
 
@@ -44,9 +47,7 @@ const App = () => {
     const token = localStorage.getItem("token");
     if (token) {
       setUserInfo();
-    }
-    else
-    {
+    } else {
       setIsLoading(false);
     }
   }, []);
@@ -59,12 +60,15 @@ const App = () => {
         </div>
       ) : (
         <>
-          <ToastContainer {...settings} />
           <Header />
           <main className="mx-auto my-1 flex w-full max-w-screen-xl grow bg-white p-4 text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+            <ToastContainer {...settings} />
             <Routes>
               <Route exact path="/" element={<Home />} />
               <Route exact path="/login" element={<Login />} />
+              <Route exact path="/tests" element={<Tests />} />
+              <Route exact path="/groups" element={<Groups />} />
+              <Route exact path="/group/:id" element={<Group />} />
             </Routes>
           </main>
           <Footer />

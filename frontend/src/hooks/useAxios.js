@@ -2,7 +2,7 @@ import axios from "axios";
 
 const useAxios = (baseURL = "") => {
   const instance = axios.create({
-    baseURL: baseURL || import.meta.env.VITE_BACKEND_URL,
+    baseURL: import.meta.env.VITE_BACKEND_URL + baseURL,
     headers: {
       "Content-Type": "application/json",
     },

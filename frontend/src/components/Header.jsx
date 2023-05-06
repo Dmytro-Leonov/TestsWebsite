@@ -39,14 +39,24 @@ const Header = () => {
             </Link>
           </li>
           {id && (
-            <li>
-              <Link
-                to="/my-tests"
-                className="text-md py-2 font-medium uppercase transition-colors hover:text-gray-700 dark:hover:text-white"
-              >
-                New tests
-              </Link>
-            </li>
+            <>
+              <li>
+                <Link
+                  to="/tests"
+                  className="text-md py-2 font-medium uppercase transition-colors hover:text-gray-700 dark:hover:text-white"
+                >
+                  Tests
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/groups"
+                  className="text-md py-2 font-medium uppercase transition-colors hover:text-gray-700 dark:hover:text-white"
+                >
+                  Groups
+                </Link>
+              </li>
+            </>
           )}
         </ul>
         <div className="flex items-center gap-5">
