@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from tests_website.groups.models import Group, GroupMember
+
+admin.site.register(Group)
+admin.site.register(GroupMember)

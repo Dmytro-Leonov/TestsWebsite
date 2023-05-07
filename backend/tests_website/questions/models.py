@@ -24,7 +24,7 @@ class Question(BaseModel):
         blank=True,
         related_name="copies_in_tests"
     )
-    question_pool = models.ForeignKey("QuestionPool", on_delete=models.CASCADE, related_name="questions")
+    question_pool = models.ForeignKey("QuestionPool", on_delete=models.CASCADE, related_name="questions", null=True)
 
     question = models.TextField(max_length=2000, validators=[MinLengthValidator(1)])
     is_original = models.BooleanField(default=True)
@@ -37,6 +37,8 @@ class Question(BaseModel):
         MULTIPLE_CHOICE = "MULTIPLE_CHOICE", "Multiple choice"
 
     type = models.CharField(max_length=20, choices=QuestionType.choices, default=QuestionType.SINGLE_CHOICE)
+
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="created_questions")
 
     def __str__(self):
         return self.question

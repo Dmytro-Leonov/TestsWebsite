@@ -27,7 +27,6 @@ DEBUG = env.bool("DJANGO_DEBUG", default=True)
 
 ALLOWED_HOSTS = ["*"]
 
-
 # Application definition
 
 LOCAL_APPS = [
@@ -159,7 +158,7 @@ REST_FRAMEWORK = {
 }
 
 APP_DOMAIN = env("APP_DOMAIN", default="http://localhost:8000")
-FRONTEND_DOMAIN = env("FRONTEND_DOMAIN", default="http://localhost:3000")
+FRONTEND_DOMAIN = env("FRONTEND_DOMAIN", default="http://localhost:5173")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

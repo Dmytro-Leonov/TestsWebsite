@@ -1,7 +1,6 @@
 from tests_website.users.models import User
 from tests_website.groups.models import Group, GroupMember
 
-
 from tests_website.common.services import model_update
 
 

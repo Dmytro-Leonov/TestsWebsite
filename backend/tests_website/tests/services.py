@@ -1,6 +1,5 @@
-from django.core.exceptions import ValidationError
+import datetime
 
-from tests_website.common.utils import get_object
 from tests_website.tests.models import Test
 from tests_website.users.models import User
 
@@ -10,7 +9,7 @@ def test_create(
     user: User,
     name: str,
     description: str = "",
-    time_limit_seconds: int,
+    time_limit: datetime.timedelta,
     attempts: int,
     number_of_questions: int,
     score: int,
@@ -20,14 +19,11 @@ def test_create(
     show_answers_after_test: bool = False,
     give_extra_time: bool = False,
 ):
-    # if get_object(Test, user=user, name=name):
-    #     raise ValidationError({"name": "You have already created test with this name"})
-
     test = Test(
         user=user,
         name=name,
         description=description,
-        time_limit_seconds=time_limit_seconds,
+        time_limit=time_limit,
         attempts=attempts,
         number_of_questions=number_of_questions,
         score=score,

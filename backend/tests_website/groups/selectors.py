@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
 
 from tests_website.common.utils import get_object
 from tests_website.groups.models import Group
@@ -15,10 +16,22 @@ def group_get(**kwargs):
 
 
 def group_list_created_by_user(*, user: User):
-    groups = Group.objects.filter(user=user).order_by("name")
+    groups = (
+        Group
+        .objects
+        .annotate(members_count=Count("members"))
+        .filter(user=user)
+        .order_by("name")
+    )
     return groups
 
 
 def group_list_for_user_as_a_member(*, user: User):
-    groups = Group.objects.filter(members=user).order_by("name")
+    groups = (
+        Group
+        .objects
+        .annotate(members_count=Count("members"))
+        .filter(members=user)
+        .order_by("name")
+    )
     return groups
