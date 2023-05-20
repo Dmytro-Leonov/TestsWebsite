@@ -12,13 +12,13 @@ const useGroupsApi = () => {
     },
     details: async (id) => {
       const url = `details/${id}/`;
-      const res = await axios.post(url);
+      const res = await axios.get(url);
       return res.data;
     },
     update: async (id, name) => {
       const url = `update/${id}/`;
       const data = { name: name };
-      const res = await axios.post(url, data);
+      const res = await axios.patch(url, data);
       return res.data;
     },
     delete: async (id) => {
@@ -42,6 +42,16 @@ const useGroupsApi = () => {
       const res = await axios.post(url, data);
       return res.data;
     },
+    removeMember: async (id, memberId) => {
+      const url = `remove-member/${id}/${memberId}/`;
+      const res = await axios.delete(url);
+      return res.data;
+    },
+    leave: async (id) => {
+      const url = `leave/${id}/`;
+      const res = await axios.delete(url);
+      return res.data;
+    }
   };
 
   return groupsApi;

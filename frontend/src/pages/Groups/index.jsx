@@ -116,7 +116,7 @@ const Groups = () => {
         <Tabs.Item title="Member of groups">
           {isLoadingGroupsAsAMember ? (
             <div className="grid w-full place-items-center">
-              <Spinner size="xl" />
+              <Spinner aria-label="Loading spinner" size="xl" />
             </div>
           ) : (
             <div>
