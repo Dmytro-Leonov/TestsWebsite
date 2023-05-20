@@ -1,13 +1,13 @@
 const parseError = (error) => {
-  console.log(error)
   const errorData = error.response.data;
   const message = errorData.message;
   const fields = errorData.extra.fields;
-  console.log(error.response.data)
+  
   let all_field_errors = [];
   Object.keys(fields).forEach((field) => {
+    console.log(field)
     const field_errors = fields[field];
-    all_field_errors = [...all_field_errors, ...field_errors[0]];
+    all_field_errors = [...all_field_errors, ...field_errors];
   });
   
   return { message, fields, all_field_errors };
