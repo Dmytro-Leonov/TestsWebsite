@@ -5,5 +5,6 @@ urlpatterns = [
     path("users/", include(("tests_website.users.urls", "users"))),
     path("tests/", include(("tests_website.tests.urls", "tests"))),
     path("groups/", include(("tests_website.groups.urls", "groups"))),
+    path("subscriptions/", include(("tests_website.subscriptions.urls", "subscriptions"))),
     path("errors/", include(("tests_website.errors.urls", "errors"))),
 ]

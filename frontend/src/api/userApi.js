@@ -24,6 +24,11 @@ const useUserApi = () => {
 
       return res.data;
     },
+    update: async (data) => {
+      const url = "users/update/";
+      const res = await axios.patch(url, data);
+      return res.data;
+    }
   };
 
   return userApi;

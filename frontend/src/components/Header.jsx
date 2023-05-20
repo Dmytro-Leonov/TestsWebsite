@@ -10,12 +10,13 @@ import {
   selectEmail,
 } from "../store/reducers/userSlice";
 import useUserApi from "../api/userApi";
+import trim from "../utils/trim";
 
 import { HiLogout, HiUser } from "react-icons/hi";
 
 const Header = () => {
   const id = useSelector(selectId);
-  const fullName = useSelector(selectFullName);
+  const fullName = trim(useSelector(selectFullName));
   const email = useSelector(selectEmail);
   const userApi = useUserApi();
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ const Header = () => {
           {id ? (
             <Dropdown label={fullName} size="xs" className="py-1">
               <Dropdown.Header>
-                <span className="block text-sm">{fullName}</span>
+                <span className="block text-sm">{(fullName)}</span>
                 <span className="block truncate text-sm font-medium">
                   {email}
                 </span>

@@ -6,6 +6,8 @@ import useGroupsApi from "../../api/groupsApi";
 
 import { Spinner, TextInput, Button, Modal } from "flowbite-react";
 import { toast } from "react-toastify";
+import { AiOutlineCheck } from "react-icons/ai";
+import { MdCancel, MdModeEdit } from "react-icons/md";
 
 import parseError from "../../utils/parseError";
 
@@ -97,42 +99,38 @@ const Group = () => {
                     onInput={(e) => setNewGroupName(e.target.value)}
                   />
                 </div>
-                <Button size={"xs"} onClick={() => groupUpdate()}>
-                  Save
-                </Button>
-                <Button
-                  size={"xs"}
-                  color={"red"}
-                  onClick={() => setIsEditing(false)}
+                <button
+                  onClick={() => groupUpdate()}
+                  className="text-green-500"
                 >
-                  Cancel
-                </Button>
+                  <AiOutlineCheck size={16} />
+                </button>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="text-red-500"
+                >
+                  <MdCancel size={16} />
+                </button>
               </>
             ) : (
               <>
                 <h1 className="text-2xl font-semibold">{group.name}</h1>
-                <div className="flex grow justify-between">
-                  {group.is_owner && (
-                    <Button size={"xs"} onClick={() => setIsEditing(true)}>
-                      Edit
-                    </Button>
-                  )}
-                  {group.is_member && (
-                    <Button
-                      size={"xs"}
-                      color={"red"}
-                      onClick={() => leaveGroup()}
-                    >
-                      Leave
-                    </Button>
-                  )}
-                </div>
+                {group.is_owner && (
+                  <button onClick={() => setIsEditing(true)}>
+                    <MdModeEdit size={16} />
+                  </button>
+                )}
               </>
+            )}
+            {group.is_member && (
+              <Button size={"xs"} color={"red"} onClick={() => leaveGroup()} className="ml-auto">
+                Leave
+              </Button>
             )}
           </div>
           <Divider />
           {group.is_owner && (
-            <Button size={"xs"} onClick={() => setShowModal(true)}>
+            <Button size={"xs"} onClick={() => setShowModal(true)} className="mb-5">
               Add members
             </Button>
           )}

@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import Tests from "./pages/Tests";
 import Groups from "./pages/Groups";
 import Group from "./pages/Group";
+import Profile from "./pages/Profile";
 
 import settings from "./data/toastContainerSettings";
 
@@ -23,6 +24,7 @@ import {
   changeId,
   changeFullName,
   changeEmail,
+  changeSubscriptionId,
 } from "./store/reducers/userSlice";
 
 import useUserApi from "./api/userApi";
@@ -40,6 +42,7 @@ const App = () => {
       dispatch(changeId(loginInfo.id));
       dispatch(changeFullName(loginInfo.full_name));
       dispatch(changeEmail(loginInfo.email));
+      dispatch(changeSubscriptionId(loginInfo.subscription_id));
 
       setIsLoading(false);
     };
@@ -69,6 +72,7 @@ const App = () => {
               <Route exact path="/tests" element={<Tests />} />
               <Route exact path="/groups" element={<Groups />} />
               <Route exact path="/group/:id" element={<Group />} />
+              <Route exact path="/profile" element={<Profile />} />
             </Routes>
           </main>
           <Footer />

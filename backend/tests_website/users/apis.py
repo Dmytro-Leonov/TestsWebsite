@@ -1,12 +1,15 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
 from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from tests_website.api.pagination import (
     LimitOffsetPagination,
     get_paginated_response,
 )
+from tests_website.api.mixins import ApiAuthMixin
 from tests_website.users.models import User
 from tests_website.users.selectors import user_list
+from tests_website.users.services import user_update
 
 
 class UserListApi(APIView):
@@ -38,3 +41,19 @@ class UserListApi(APIView):
             request=request,
             view=self,
         )
+
+
+class UserUpdateApi(ApiAuthMixin, APIView):
+    class InputSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = User
+            fields = ("full_name",)
+
+    def patch(self, request):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        user_update(user=user, data=serializer.validated_data)
+
+        return Response(status=status.HTTP_200_OK)

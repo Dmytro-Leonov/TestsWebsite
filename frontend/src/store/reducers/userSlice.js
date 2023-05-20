@@ -4,7 +4,8 @@ const initialState = {
   id: null,
   fullName: null,
   email: null,
-  isLoading: false
+  isLoading: false,
+  subscriptionId: null,
 }
 
 export const userSlice = createSlice({
@@ -23,14 +24,18 @@ export const userSlice = createSlice({
     changeIsLoading: (state, action) => {
       state.isLoading = action.payload
     },
+    changeSubscriptionId: (state, action) => {
+      state.subscriptionId = action.payload
+    }
   }
 })
 
 export default userSlice.reducer
 
-export const {changeId, changeFullName, changeEmail, changeIsLoading} = userSlice.actions
+export const {changeId, changeFullName, changeEmail, changeIsLoading, changeSubscriptionId} = userSlice.actions
 
 export const selectId = (state) => state.user.id
 export const selectFullName = (state) => state.user.fullName
 export const selectEmail = (state) => state.user.email
 export const selectIsLoading = (state) => state.user.isLoading
+export const selectSubscriptinId = (state) => state.user.subscriptionId
