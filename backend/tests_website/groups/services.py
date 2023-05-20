@@ -29,8 +29,13 @@ def group_add_members(*, group: Group, emails: list[str]):
 
     users = User.objects.filter(email__in=user_emails_to_add)
 
-    added_members = GroupMember.objects.bulk_create(
+    GroupMember.objects.bulk_create(
         [GroupMember(group=group, user=user) for user in users],
     )
 
-    return added_members
+    return users
+
+
+def group_user_is_member(*, group_id: int, user_id: int):
+    return GroupMember.objects.filter(group_id=group_id, user_id=user_id).exists()
+

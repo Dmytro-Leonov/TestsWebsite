@@ -8,6 +8,8 @@ from tests_website.groups.apis import (
     GroupListCreatedByUserApi,
     GroupListForUserAsAMemberApi,
     GroupAddMembersApi,
+    GroupRemoveMemberApi,
+    GroupLeaveApi,
 )
 
 urlpatterns = [
@@ -18,4 +20,6 @@ urlpatterns = [
     path("list-created-by-user/", GroupListCreatedByUserApi.as_view(), name="list-groups-created-by-user"),
     path("list-for-user-as-a-member/", GroupListForUserAsAMemberApi.as_view(), name="list-groups-for-user-as-a-member"),
     path("add-members/<int:group_id>/", GroupAddMembersApi.as_view(), name="group-add-members"),
+    path("remove-member/<int:group_id>/<int:member_id>/", GroupRemoveMemberApi.as_view(), name="group-remove-member"),
+    path("leave/<int:group_id>/", GroupLeaveApi.as_view(), name="group-leave"),
 ]

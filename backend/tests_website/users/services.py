@@ -12,10 +12,11 @@ def user_create(
     email: str,
     is_active: bool = True,
     is_admin: bool = False,
-    password: Optional[str] = None
+    password: Optional[str] = None,
+    **other_fields,
 ) -> User:
     user = User.objects.create_user(
-        full_name=full_name, email=email, is_active=is_active, is_admin=is_admin, password=password
+        full_name=full_name, email=email, is_active=is_active, is_admin=is_admin, password=password, **other_fields
     )
 
     return user
@@ -26,10 +27,6 @@ def user_update(*, user: User, data) -> User:
     non_side_effect_fields = ["full_name", "subscription", "is_active", "is_admin"]
 
     user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)
-
-    # Side-effect fields update here (e.g. username is generated based on first & last name)
-
-    # ... some additional tasks with the user ...
 
     return user
 

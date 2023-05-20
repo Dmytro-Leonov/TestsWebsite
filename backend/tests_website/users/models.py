@@ -12,7 +12,7 @@ from tests_website.subscriptions.selectors import subscription_get_default
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, full_name, email, is_active=True, is_admin=False, password=None):
+    def create_user(self, full_name, email, is_active=True, is_admin=False, password=None, **other_fields):
         if not full_name:
             raise ValidationError("Users must have a full name")
         if not email:
@@ -25,7 +25,8 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email.lower()),
             subscription=default_subscription,
             is_active=is_active,
-            is_admin=is_admin
+            is_admin=is_admin,
+            **other_fields
         )
 
         if password is not None:
