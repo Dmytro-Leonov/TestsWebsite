@@ -15,6 +15,9 @@ import Tests from "./pages/Tests";
 import Groups from "./pages/Groups";
 import Group from "./pages/Group";
 import Profile from "./pages/Profile";
+import CreateTest from "./pages/CreateTest";
+import NotFound from "./pages/NotFound";
+import TestSettings from "./pages/TestSettings";
 
 import settings from "./data/toastContainerSettings";
 
@@ -67,12 +70,15 @@ const App = () => {
           <main className="mx-auto my-1 flex w-full max-w-screen-xl grow bg-white p-4 text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">
             <ToastContainer {...settings} />
             <Routes>
+              <Route path="*" element={<NotFound />} />
               <Route exact path="/" element={<Home />} />
               <Route exact path="/login" element={<Login />} />
               <Route exact path="/tests" element={<Tests />} />
               <Route exact path="/groups" element={<Groups />} />
               <Route exact path="/group/:id" element={<Group />} />
               <Route exact path="/profile" element={<Profile />} />
+              <Route exact path="/tests/create" element={<CreateTest />} />
+              <Route exact path="/tests/:id" element={<TestSettings />} />
             </Routes>
           </main>
           <Footer />

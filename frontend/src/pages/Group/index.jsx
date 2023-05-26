@@ -65,8 +65,17 @@ const Group = () => {
       setIsLoading(true);
       getGroup();
     } catch (error) {
-      const { all_field_errors } = parseError(error);
-      toast.error(all_field_errors[0]);
+      const errorData = error.response.data;
+      const emails = errorData.extra?.fields?.emails;
+      let errorMessages = [];
+      if (emails) {
+        Object.keys(emails).forEach((emailIndex) => {
+          const emailError = emails[emailIndex];
+          errorMessages = [...errorMessages, `Email ${+emailIndex + 1} - ${emailError}`];
+        });
+      }
+
+      toast.error(errorMessages.join("\n"));
     }
   };
 

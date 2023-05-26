@@ -5,7 +5,6 @@ const parseError = (error) => {
   
   let all_field_errors = [];
   Object.keys(fields).forEach((field) => {
-    console.log(field)
     const field_errors = fields[field];
     all_field_errors = [...all_field_errors, ...field_errors];
   });

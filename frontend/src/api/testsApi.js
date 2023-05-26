@@ -1,19 +1,14 @@
 import useAxios from "../hooks/useAxios";
 
 const useTestsApi = () => {
-  const axios = useAxios();
+  const axios = useAxios("tests/");
 
   const testsApi = {
-    getLoginInfo: async () => {
-      const url = "auth/me/";
-      const res = await axios.get(url);
-      return res.data;
-    },
-    logout: async () => {
-      const url = "auth/logout/";
-      const res = await axios.post(url);
-      return res.data;
-    },
+    create: async (data) => {
+      const url = "create/";
+      const response = await axios.post(url, data);
+      return response.data;
+    }
   };
 
   return testsApi;
