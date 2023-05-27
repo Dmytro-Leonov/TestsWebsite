@@ -15,7 +15,7 @@ class TestCreateApi(ApiAuthMixin, APIView):
             fields = (
                 "name",
                 "description",
-                "time_limit_seconds",
+                "time_limit",
                 "attempts",
                 "number_of_questions",
                 "score",
@@ -33,7 +33,7 @@ class TestCreateApi(ApiAuthMixin, APIView):
                 "id",
                 "name",
                 "description",
-                "time_limit_seconds",
+                "time_limit",
                 "attempts",
                 "number_of_questions",
                 "score",
@@ -51,3 +51,6 @@ class TestCreateApi(ApiAuthMixin, APIView):
         serializer.is_valid(raise_exception=True)
         test = test_create(user=self.request.user, **serializer.validated_data)
         return Response(self.OutputSerializer(test).data, status=status.HTTP_201_CREATED)
+
+
+

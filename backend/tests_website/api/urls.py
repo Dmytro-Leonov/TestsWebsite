@@ -6,5 +6,6 @@ urlpatterns = [
     path("tests/", include(("tests_website.tests.urls", "tests"))),
     path("groups/", include(("tests_website.groups.urls", "groups"))),
     path("subscriptions/", include(("tests_website.subscriptions.urls", "subscriptions"))),
+    path("questions/", include(("tests_website.questions.urls", "questions"))),
     path("errors/", include(("tests_website.errors.urls", "errors"))),
 ]

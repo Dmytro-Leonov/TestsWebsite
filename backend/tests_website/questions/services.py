@@ -1,4 +1,5 @@
-from tests_website.questions.models import Question
+from tests_website.questions.models import Question, QuestionPool
+from tests_website.users.models import User
 
 from tests_website.common.services import model_update
 
@@ -12,3 +13,10 @@ from tests_website.common.services import model_update
 #     is_original: bool = True,
 # ):
 #     question =
+
+def question_pool_create(*, name: str, user: User) -> QuestionPool:
+    question_pool = QuestionPool(name=name, user=user)
+    question_pool.full_clean()
+    question_pool.save()
+
+    return question_pool

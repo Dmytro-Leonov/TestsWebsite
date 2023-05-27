@@ -1,11 +1,12 @@
 from django.db import models
 from django.core.validators import MinLengthValidator
+from django.db.models import UniqueConstraint
 
 from tests_website.common.models import BaseModel
 
 
 class QuestionPool(BaseModel):
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="created_question_pools")
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="question_pools")
 
     name = models.CharField(max_length=200, validators=[MinLengthValidator(1)])
 
@@ -13,7 +14,13 @@ class QuestionPool(BaseModel):
         return self.name
 
     class Meta:
-        unique_together = ("user", "name")
+        constraints = [
+            UniqueConstraint(
+                "user", "name",
+                name="unique_question_pool_name_for_user",
+                violation_error_message="You have already created a question pool with this name"
+            )
+        ]
 
 
 class Question(BaseModel):

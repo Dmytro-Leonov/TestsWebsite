@@ -11,7 +11,7 @@ def validate_max_groups_per_user(user: User) -> int:
 
     if max_groups <= created_groups:
         raise ValidationError(
-            f"You have reached the maximum number of groups ({max_groups}) for your subscription"
+            f"You have reached the maximum number of groups ({max_groups})"
         )
 
     return max_groups - created_groups

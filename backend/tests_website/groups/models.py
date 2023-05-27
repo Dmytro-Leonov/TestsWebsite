@@ -11,7 +11,6 @@ class Group(BaseModel):
 
     members = models.ManyToManyField("users.User", through="GroupMember", related_name="member_of_groups")
 
-
     class Meta:
         constraints = [
             UniqueConstraint(
