@@ -1,14 +1,17 @@
+from django.shortcuts import get_object_or_404
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
 
+from tests_website.api.utils import inline_serializer
 from tests_website.api.mixins import ApiAuthMixin
 
 from tests_website.questions.models import Question, QuestionPool
 from tests_website.questions.utils import validate_max_question_pools
-from tests_website.questions.services import question_pool_create
-from tests_website.questions.selectors import question_pools_list
+from tests_website.questions.services import question_pool_create, question_pool_update
+from tests_website.questions.selectors import question_pools_list, question_pool_details
 
 
 class QuestionCreateApi(ApiAuthMixin, APIView):
@@ -24,7 +27,7 @@ class QuestionCreateApi(ApiAuthMixin, APIView):
         question = serializers.CharField()
         type = serializers.ChoiceField(choices=Question.QuestionType.choices)
         is_original = serializers.BooleanField(default=True)
-        order = serializers.CharField()
+        order = serializers.IntegerField()
 
     class OutputSerializer(serializers.ModelSerializer):
         class Meta:
@@ -82,3 +85,91 @@ class QuestionPoolListApi(ApiAuthMixin, APIView):
         question_pools = question_pools_list(user=self.request.user)
         serializer = self.OutputSerializer(question_pools, many=True)
         return Response(serializer.data, status.HTTP_200_OK)
+
+
+class QuestionPoolDetailApi(ApiAuthMixin, APIView):
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        name = serializers.CharField()
+        questions = inline_serializer(many=True, fields={
+            "id": serializers.IntegerField(),
+            "question": serializers.CharField(),
+            "type": serializers.ChoiceField(choices=Question.QuestionType.choices),
+            "is_original": serializers.BooleanField(),
+            "order": serializers.IntegerField(),
+        })
+
+    def get(self, request, question_pool_id):
+        question_pool = question_pool_details(question_pool_id=question_pool_id)
+        serializer = self.OutputSerializer(question_pool)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+class QuestionPoolUpdateApi(ApiAuthMixin, APIView):
+    class InputSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = QuestionPool
+            fields = ("name",)
+
+    class OutputSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = QuestionPool
+            fields = ("name",)
+
+    def post(self, request, question_pool_id):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        question_pool = get_object_or_404(QuestionPool, id=question_pool_id)
+        question_pool = question_pool_update(
+            question_pool=question_pool, **serializer.validated_data
+        )
+
+        serializer = self.OutputSerializer(question_pool)
+
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+class QuestionPoolDeleteApi(ApiAuthMixin, APIView):
+    def delete(self, request, question_pool_id):
+        question_pool = get_object_or_404(QuestionPool, id=question_pool_id)
+
+        if question_pool.user != self.request.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        question_pool.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class QuestionDeleteApi(ApiAuthMixin, APIView):
+    def delete(self, request, question_id):
+        question = get_object_or_404(Question, id=question_id)
+
+        if question.user != self.request.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        question.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class QuestionUpdateOrderApi(ApiAuthMixin, APIView):
+    class InputSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Question
+            fields = ("order",)
+
+    def post(self, request, question_id):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        question = get_object_or_404(Question, id=question_id)
+
+        if question.user != self.request.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        question.order = serializer.validated_data["order"]
+        question.save()
+
+        return Response(status=status.HTTP_200_OK)

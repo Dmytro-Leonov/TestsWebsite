@@ -2,13 +2,15 @@ from django.db import models
 from django.core.validators import MinLengthValidator
 from django.db.models import UniqueConstraint
 
+import pgtrigger
+
 from tests_website.common.models import BaseModel
 
 
 class QuestionPool(BaseModel):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="question_pools")
 
-    name = models.CharField(max_length=200, validators=[MinLengthValidator(1)])
+    name = models.CharField(max_length=100, validators=[MinLengthValidator(1)])
 
     def __str__(self):
         return self.name
@@ -36,8 +38,7 @@ class Question(BaseModel):
     question = models.TextField(max_length=2000, validators=[MinLengthValidator(1)])
     is_original = models.BooleanField(default=True)
 
-    # order in question pool calculated using lexorank algorithm
-    order = models.CharField(max_length=256, db_index=True)
+    order = models.IntegerField(db_index=True)
 
     class QuestionType(models.TextChoices):
         SINGLE_CHOICE = "SINGLE_CHOICE", "Single choice"
@@ -48,12 +49,48 @@ class Question(BaseModel):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="created_questions")
 
     def __str__(self):
-        return self.question
+        return f"{self.order} - {self.question}"
 
     class Meta:
+        ordering = ["order"]
         unique_together = [
             ("question_pool", "question"),
-            ("question_pool", "order")
+        ]
+        triggers = [
+            pgtrigger.Trigger(
+                name="update_answers_order_on_update",
+                operation=pgtrigger.Update,
+                when=pgtrigger.Before,
+                func=
+                """
+                IF NOT pg_trigger_depth() > 1 THEN
+                    IF NEW."order" > OLD."order" THEN
+                        UPDATE questions_question
+                        SET "order" = "order" - 1
+                        WHERE "order" > OLD."order" AND "order" <= NEW."order" AND question_pool_id = OLD.question_pool_id;
+                    ELSEIF NEW."order" < OLD."order" THEN
+                        UPDATE questions_question
+                        SET "order" = "order" + 1
+                        WHERE "order" >= NEW."order" AND "order" < OLD."order";
+                    END IF;
+                END IF;
+                RETURN NEW;
+                """
+            ),
+            pgtrigger.Trigger(
+                name="update_answers_order_on_delete",
+                operation=pgtrigger.Delete,
+                when=pgtrigger.Before,
+                func=
+                """
+                IF NOT pg_trigger_depth() > 1 THEN
+                    UPDATE questions_question
+                    SET "order" = "order" - 1
+                    WHERE "order" > OLD."order" AND question_pool_id = OLD.question_pool_id;
+                END IF;
+                RETURN OLD;
+                """
+            )
         ]
 
 
@@ -70,8 +107,7 @@ class Answer(BaseModel):
     answer = models.TextField(max_length=2000, validators=[MinLengthValidator(1)])
     is_correct = models.BooleanField()
 
-    # order in question pool calculated using lexorank algorithm
-    order = models.CharField(max_length=256, db_index=True)
+    order = models.IntegerField(db_index=True)
 
     def __str__(self):
         return self.answer

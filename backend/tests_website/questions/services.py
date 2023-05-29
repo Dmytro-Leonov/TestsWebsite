@@ -20,3 +20,9 @@ def question_pool_create(*, name: str, user: User) -> QuestionPool:
     question_pool.save()
 
     return question_pool
+
+
+def question_pool_update(*, question_pool: QuestionPool, name: str) -> QuestionPool:
+    question_pool, _ = model_update(instance=question_pool, fields=["name"], data={"name": name})
+
+    return question_pool

@@ -13,6 +13,7 @@ import useUserApi from "../api/userApi";
 import trim from "../utils/trim";
 
 import { HiLogout, HiUser } from "react-icons/hi";
+import { BsQuestionSquareFill } from "react-icons/bs";
 
 const Header = () => {
   const id = useSelector(selectId);
@@ -72,6 +73,9 @@ const Header = () => {
               </Dropdown.Header>
               <Link to="/profile">
                 <Dropdown.Item icon={HiUser}>Profile</Dropdown.Item>
+              </Link>
+              <Link to="/question-pools">
+                <Dropdown.Item icon={BsQuestionSquareFill}>Question Pools</Dropdown.Item>
               </Link>
               <Dropdown.Divider />
               <button onClick={() => logout()} className="w-full">

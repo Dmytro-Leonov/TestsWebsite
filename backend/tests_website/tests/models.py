@@ -84,8 +84,7 @@ class TestQuestion(BaseModel):
     test = models.ForeignKey("Test", on_delete=models.CASCADE)
     question = models.ForeignKey("questions.Question", on_delete=models.CASCADE)
 
-    # order in test calculated using lexorank algorithm
-    order = models.CharField(max_length=256, blank=False, null=False, db_index=True)
+    order = models.IntegerField(db_index=True)
 
     class Meta:
         constraints = [

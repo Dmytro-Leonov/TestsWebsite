@@ -12,6 +12,7 @@ import { MdCancel, MdModeEdit } from "react-icons/md";
 import parseError from "../../utils/parseError";
 
 import Divider from "../../components/ui/Divider";
+import ConfirmationModal from "../../components/ui/ConfirmationModal";
 import PersonCard from "./PersonCard";
 
 const Group = () => {
@@ -26,6 +27,9 @@ const Group = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
 
   const emailsRef = useRef();
 
@@ -56,6 +60,17 @@ const Group = () => {
     }
   };
 
+  const deleteGroup = async () => {
+    try {
+      await groupsApi.delete(group.id);
+      toast.success("Group deleted");
+      navigate("/groups");
+    } catch (error) {
+      const { all_field_errors } = parseError(error);
+      toast.error(all_field_errors[0]);
+    }
+  };
+
   const addMembers = async () => {
     try {
       const emails = emailsRef.current.value.trim().split("\n");
@@ -71,7 +86,10 @@ const Group = () => {
       if (emails) {
         Object.keys(emails).forEach((emailIndex) => {
           const emailError = emails[emailIndex];
-          errorMessages = [...errorMessages, `Email ${+emailIndex + 1} - ${emailError}`];
+          errorMessages = [
+            ...errorMessages,
+            `Email ${+emailIndex + 1} - ${emailError}`,
+          ];
         });
       }
 
@@ -98,48 +116,69 @@ const Group = () => {
         </div>
       ) : (
         <div className="w-full">
-          <div className="flex items-center gap-2">
-            {isEditing ? (
-              <>
-                <div className=" w-32">
-                  <TextInput
-                    value={newGroupName}
-                    sizing={"sm"}
-                    onInput={(e) => setNewGroupName(e.target.value)}
-                  />
-                </div>
-                <button
-                  onClick={() => groupUpdate()}
-                  className="text-green-500"
-                >
-                  <AiOutlineCheck size={16} />
-                </button>
-                <button
-                  onClick={() => setIsEditing(false)}
-                  className="text-red-500"
-                >
-                  <MdCancel size={16} />
-                </button>
-              </>
-            ) : (
-              <>
-                <h1 className="text-2xl font-semibold">{group.name}</h1>
-                {group.is_owner && (
-                  <button onClick={() => setIsEditing(true)}>
-                    <MdModeEdit size={16} />
+          <div className="flex items-center justify-between">
+            <div className="flex gap-2">
+              {isEditing ? (
+                <>
+                  <div className=" w-32">
+                    <TextInput
+                      value={newGroupName}
+                      sizing={"sm"}
+                      onInput={(e) => setNewGroupName(e.target.value)}
+                    />
+                  </div>
+                  <button
+                    onClick={() => groupUpdate()}
+                    className="text-green-500"
+                  >
+                    <AiOutlineCheck size={16} />
                   </button>
-                )}
-              </>
-            )}
-            {group.is_member && (
-              <Button size={"xs"} color={"red"} onClick={() => leaveGroup()} className="ml-auto">
-                Leave
-              </Button>
-            )}
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="text-red-500"
+                  >
+                    <MdCancel size={16} />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h1 className="text-2xl font-semibold">{group.name}</h1>
+                  {group.is_owner && (
+                    <button onClick={() => setIsEditing(true)}>
+                      <MdModeEdit size={16} />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {group.is_member && (
+                <Button
+                  size={"xs"}
+                  color={"red"}
+                  onClick={() => setShowLeaveModal(true)}
+                >
+                  Leave
+                </Button>
+              )}
+              {group.is_owner && (
+                <Button
+                  size={"xs"}
+                  color={"red"}
+                  onClick={() => setShowDeleteModal(true)}
+                >
+                  Delete
+                </Button>
+              )}
+            </div>
           </div>
           <Divider />
           {group.is_owner && (
-            <Button size={"xs"} onClick={() => setShowModal(true)} className="mb-5">
+            <Button
+              size={"xs"}
+              onClick={() => setShowModal(true)}
+              className="mb-5"
+            >
               Add members
             </Button>
           )}
@@ -175,6 +214,23 @@ const Group = () => {
               </div>
             </Modal.Body>
           </Modal>
+          <ConfirmationModal
+            prompt={"Are you sure you want to delete this group?"}
+            confirmText={"Delete"}
+            rejectText={"Cancel"}
+            onClick={() => deleteGroup()}
+            showModal={showDeleteModal}
+            setShowModal={setShowDeleteModal}
+          />
+          <ConfirmationModal
+            prompt={"Are you sure you want to leave this group?"}
+            confirmText={"Leave"}
+            rejectText={"Cancel"}
+            onClick={() => leaveGroup()}
+            showModal={showLeaveModal}
+            setShowModal={setShowLeaveModal}
+          />
+
           <div className="mt-2 flex gap-5">
             {group.members.map((member) => {
               return (

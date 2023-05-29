@@ -48,6 +48,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "django_extensions",
     "silk",
+    "pgtrigger",
 ]
 
 INSTALLED_APPS = [
