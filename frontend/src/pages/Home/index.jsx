@@ -2,12 +2,13 @@ import RichTextEditor from "../../components/forms/RichTextEditor";
 import { useState } from "react";
 
 function Home() {
-  const [markup, setMarkup] = useState("");
+  const [markup, setMarkup] = useState('<p>assdfdddddsadfdfa</p>');
+  
   
   return (
     <div className="w-full">
       <h1 className="shadow">Home</h1>
-      <RichTextEditor setMarkup={setMarkup} />
+      <RichTextEditor setMarkup={setMarkup} initialHTML={markup} />
     </div>
   );
 }

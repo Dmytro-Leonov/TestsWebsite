@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import TestSettings from "./pages/TestSettings";
 import QuestionPools from "./pages/QuestionPools";
 import QuestionPool from "./pages/QuestionPool";
+import CreateQuestion from "./pages/CreateQuestoin";
 
 import settings from "./data/toastContainerSettings";
 
@@ -83,6 +84,7 @@ const App = () => {
               <Route exact path="/tests/:id" element={<TestSettings />} />
               <Route exact path="/question-pools" element={<QuestionPools />} />
               <Route exact path="/question-pools/:id" element={<QuestionPool />} />
+              <Route exact path="/question-pools/:id/add-question" element={<CreateQuestion />} />
             </Routes>
           </main>
           <Footer />

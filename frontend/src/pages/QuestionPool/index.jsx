@@ -157,7 +157,7 @@ const QuestionPool = () => {
           <div className="grow">
             {questions.length > 0 ? (
               <div className="flex flex-col gap-3">
-                <Button size="xs" className="w-max">
+                <Button size="xs" className="w-max" onClick={() => navigate("add-question")}>
                   Add question
                 </Button>
                 <DragDropContext onDragEnd={handleOnDragEnd}>
@@ -176,37 +176,43 @@ const QuestionPool = () => {
                           >
                             {(provided) => (
                               <div
-                                className="flex items-center gap-2"
+                                className="flex gap-2 grow"
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                               >
-                                <div className="[&>*]:flex [&>*]:items-center flex grow items-stretch gap-2 rounded-md border border-gray-500 p-2 hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white">
+                                <div className="flex grow flex-row gap-2 rounded-md border border-gray-500 p-2 hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white [&>*]:flex [&>*]:items-center">
                                   <div {...provided.dragHandleProps}>
                                     <MdDragIndicator size={18} />
                                   </div>
                                   <span>{index + 1}</span>
-                                  <div className="hover:bg-wite w-[2px] rounded bg-gray-500 hover:bg-gray-700 dark:bg-gray-400 dark:hover:bg-white"></div>
-                                  <p>{question.question}</p>
+                                  <div className="hover:bg-wite h-full w-[1px] rounded bg-gray-500 hover:bg-gray-700 dark:bg-gray-400 dark:hover:bg-white"></div>
+                                  <div className="grow" dangerouslySetInnerHTML={{__html: question.question}}/>
+                                  <div className="hover:bg-wite h-full w-[1px] rounded bg-gray-500 hover:bg-gray-700 dark:bg-gray-400 dark:hover:bg-white"></div>
+
+                                  <div className="flex flex-col justify-center gap-2">
+                                    <Button
+                                      size="xs"
+                                      className="w-full"
+                                      onClick={() => {
+                                        setEditQuestionModal(true);
+                                        setQuestionId(question.id);
+                                      }}
+                                    >
+                                      Edit
+                                    </Button>
+                                    <Button
+                                      size={"xs"}
+                                      className="w-full"
+                                      color={"red"}
+                                      onClick={() => {
+                                        setDeleteQuestionModal(true);
+                                        setQuestionId(question.id);
+                                      }}
+                                    >
+                                      Delete
+                                    </Button>
+                                  </div>
                                 </div>
-                                <Button
-                                  size="xs"
-                                  onClick={() => {
-                                    setEditQuestionModal(true);
-                                    setQuestionId(question.id);
-                                  }}
-                                >
-                                  Edit
-                                </Button>
-                                <Button
-                                  size={"xs"}
-                                  color={"red"}
-                                  onClick={() => {
-                                    setDeleteQuestionModal(true);
-                                    setQuestionId(question.id);
-                                  }}
-                                >
-                                  Delete
-                                </Button>
                               </div>
                             )}
                           </Draggable>
