@@ -90,7 +90,21 @@ class Question(BaseModel):
                 END IF;
                 RETURN OLD;
                 """
-            )
+            ),
+            pgtrigger.Trigger(
+                name="update_answers_order_on_insert",
+                operation=pgtrigger.Insert,
+                when=pgtrigger.Before,
+                func=
+                """
+                IF NOT pg_trigger_depth() > 1 THEN
+                    UPDATE questions_question
+                    SET "order" = "order" + 1
+                    WHERE "order" >= NEW."order" AND question_pool_id = NEW.question_pool_id;
+                END IF;
+                RETURN NEW;
+                """
+            ),
         ]
 
 
@@ -110,10 +124,11 @@ class Answer(BaseModel):
     order = models.IntegerField(db_index=True)
 
     def __str__(self):
-        return self.answer
+        return f"{self.order} - {self.answer}"
 
     class Meta:
         unique_together = [
             ("question", "answer"),
             ("question", "order")
         ]
+        ordering = ["order"]

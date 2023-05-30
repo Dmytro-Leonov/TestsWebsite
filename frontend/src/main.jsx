@@ -1,4 +1,3 @@
-import React from "react";
 import setupStore from "./store/store";
 import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";

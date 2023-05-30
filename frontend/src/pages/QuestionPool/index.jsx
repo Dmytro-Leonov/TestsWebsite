@@ -10,6 +10,7 @@ import { Button, Spinner, TextInput } from "flowbite-react";
 import ConfirmationModal from "../../components/ui/ConfirmationModal";
 import { MdModeEdit, MdCancel } from "react-icons/md";
 import { AiOutlineCheck } from "react-icons/ai";
+import { MdDragIndicator } from "react-icons/md";
 
 const QuestionPool = () => {
   const { id } = useParams();
@@ -27,6 +28,10 @@ const QuestionPool = () => {
   const [showDeleteQuestionModal, setDeleteQuestionModal] = useState(false);
   const [showEditQuestionModal, setEditQuestionModal] = useState(false);
   const [questionId, setQuestionId] = useState(0);
+
+  useEffect(() => {
+    getQuestionPool();
+  }, [id]);
 
   const getQuestionPool = async () => {
     setIsLoading(true);
@@ -50,7 +55,7 @@ const QuestionPool = () => {
 
   const deleteQuestion = async () => {
     try {
-      await questinsApi.deleteQuestion(id);
+      await questinsApi.deleteQuestion(questionId);
       toast.success("Question deleted");
       setDeleteQuestionModal(false);
       getQuestionPool();
@@ -59,10 +64,6 @@ const QuestionPool = () => {
       toast.error(all_field_errors[0]);
     }
   };
-
-  useEffect(() => {
-    getQuestionPool();
-  }, [id]);
 
   const questinoPoolUpdate = async () => {
     try {
@@ -91,7 +92,7 @@ const QuestionPool = () => {
     const [removed] = newQuestions.splice(source.index, 1);
     newQuestions.splice(destination.index, 0, removed);
     setQuestions(newQuestions);
-    
+
     try {
       await questinsApi.updateQuestionOrder(draggableId, destination.index + 1);
     } catch (error) {
@@ -176,12 +177,15 @@ const QuestionPool = () => {
                             {(provided) => (
                               <div
                                 className="flex items-center gap-2"
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
                                 ref={provided.innerRef}
+                                {...provided.draggableProps}
                               >
-                                <div className="flex grow select-none gap-2 rounded-md border border-gray-500 p-2 hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white">
-                                  <span>{question.order}</span>|
+                                <div className="[&>*]:flex [&>*]:items-center flex grow items-stretch gap-2 rounded-md border border-gray-500 p-2 hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white">
+                                  <div {...provided.dragHandleProps}>
+                                    <MdDragIndicator size={18} />
+                                  </div>
+                                  <span>{index + 1}</span>
+                                  <div className="hover:bg-wite w-[2px] rounded bg-gray-500 hover:bg-gray-700 dark:bg-gray-400 dark:hover:bg-white"></div>
                                   <p>{question.question}</p>
                                 </div>
                                 <Button

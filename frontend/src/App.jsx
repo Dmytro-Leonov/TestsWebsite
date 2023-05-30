@@ -69,7 +69,7 @@ const App = () => {
       ) : (
         <>
           <Header />
-          <main className="mx-auto my-1 flex w-full max-w-screen-xl grow bg-white p-4 text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+          <main className="mx-auto my-1 flex w-full max-w-screen-xl grow bg-white p-4 text-sm text-gray-700 dark:bg-gray-800 dark:text-gray-300">
             <ToastContainer {...settings} />
             <Routes>
               <Route path="*" element={<NotFound />} />

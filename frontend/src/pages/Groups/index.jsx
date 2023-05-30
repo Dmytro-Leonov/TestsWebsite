@@ -45,6 +45,7 @@ const Groups = () => {
 
   const createGroup = async () => {
     try {
+      console.log("triggered")
       const newGroup = await groupsAPI.create(groupNameRef.current.value);
       if (newGroup) {
         toast.success("Group created");
@@ -54,7 +55,6 @@ const Groups = () => {
       }
     } catch (error) {
       const { all_field_errors } = parseError(error);
-      
       toast.error(all_field_errors[0]);
     }
   };
@@ -89,7 +89,7 @@ const Groups = () => {
                   />
                 </div>
                 <div className="w-full">
-                  <Button type="submit" onClick={() => createGroup()}>Create group</Button>
+                  <Button type="submit">Create group</Button>
                 </div>
               </form>
             </Modal.Body>

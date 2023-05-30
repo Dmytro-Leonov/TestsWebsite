@@ -10,12 +10,17 @@ from tests_website.api.mixins import ApiAuthMixin
 
 from tests_website.questions.models import Question, QuestionPool
 from tests_website.questions.utils import validate_max_question_pools
-from tests_website.questions.services import question_pool_create, question_pool_update
+from tests_website.questions.services import (
+    question_create,
+    question_pool_create,
+    question_pool_update
+)
 from tests_website.questions.selectors import question_pools_list, question_pool_details
 
 
 class QuestionCreateApi(ApiAuthMixin, APIView):
-    class InputSerializer(serializers.ModelSerializer):
+    class Serializer(serializers.Serializer):
+        id = serializers.IntegerField(required=False, read_only=True)
         original_question = serializers.PrimaryKeyRelatedField(
             queryset=Question.objects.all(),
             required=False
@@ -28,19 +33,20 @@ class QuestionCreateApi(ApiAuthMixin, APIView):
         type = serializers.ChoiceField(choices=Question.QuestionType.choices)
         is_original = serializers.BooleanField(default=True)
         order = serializers.IntegerField()
-
-    class OutputSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Question
-            fields = "__all__"
+        answers = inline_serializer(fields={
+            "id": serializers.IntegerField(required=False, read_only=True),
+            "answer": serializers.CharField(),
+            "is_correct": serializers.BooleanField(),
+            "order": serializers.IntegerField(),
+        }, many=True)
 
     def post(self, request):
-        serializer = self.InputSerializer(data=request.data)
+        serializer = self.Serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        question = serializer.save()
+        question = question_create(user=self.request.user, **serializer.validated_data)
 
-        serializer = self.OutputSerializer(question)
+        serializer = self.Serializer(question)
 
         return Response(serializer.data, status.HTTP_201_CREATED)
 
