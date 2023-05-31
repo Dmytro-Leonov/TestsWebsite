@@ -7,7 +7,7 @@ function Home() {
   
   return (
     <div className="w-full">
-      <h1 className="shadow">Home</h1>
+      <h1>Home</h1>
       <RichTextEditor setMarkup={setMarkup} initialHTML={markup} />
     </div>
   );

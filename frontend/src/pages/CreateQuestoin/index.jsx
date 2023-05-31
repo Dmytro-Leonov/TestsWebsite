@@ -7,8 +7,9 @@ import QuestionForm from "../../components/forms/QuestionForm";
 const CreateQuestion = () => {
   const { id } = useParams();
   const questionsApi = useQuestionsApi();
-  const [question, setQuestion] = useState({});
-  const [answers, setAnswers] = useState([]);
+
+  const [newQuestion, setNewQuestion] = useState({});
+  const [newAnswers, setNewAnswers] = useState([]);
 
   // useEffect(() => {
   //   if (id) {
@@ -16,9 +17,17 @@ const CreateQuestion = () => {
   //   }
   // }, []);
 
+  console.log(newQuestion);
+  console.log(newAnswers);
+
   return (
-    <div className="flex w-full justify-center">
-      <QuestionForm />
+    <div className="flex min-w-full flex-col">
+      <QuestionForm
+        existingQuestion={{question: '<p><br></p><figure><img src="https://i.ytimg.com/vi/LOpO__ykxb8/hq720.jpg" height="auto" width="auto"/></figure><p><br></p>', type: "MULTIPLE_CHOICE"}}
+        existingAnswers={[]}
+        setQuestion={setNewQuestion}
+        setAnswers={setNewAnswers}
+      />
     </div>
   );
 };

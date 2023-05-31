@@ -26,7 +26,6 @@ const QuestionPool = () => {
   const [showDeleteQuestionPoolModal, setDeleteQuestionPoolModal] =
     useState(false);
   const [showDeleteQuestionModal, setDeleteQuestionModal] = useState(false);
-  const [showEditQuestionModal, setEditQuestionModal] = useState(false);
   const [questionId, setQuestionId] = useState(0);
 
   useEffect(() => {
@@ -157,7 +156,11 @@ const QuestionPool = () => {
           <div className="grow">
             {questions.length > 0 ? (
               <div className="flex flex-col gap-3">
-                <Button size="xs" className="w-max" onClick={() => navigate("add-question")}>
+                <Button
+                  size="xs"
+                  className="w-max"
+                  onClick={() => navigate("add-question")}
+                >
                   Add question
                 </Button>
                 <DragDropContext onDragEnd={handleOnDragEnd}>
@@ -176,7 +179,7 @@ const QuestionPool = () => {
                           >
                             {(provided) => (
                               <div
-                                className="flex gap-2 grow"
+                                className="flex grow gap-2"
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                               >
@@ -186,7 +189,12 @@ const QuestionPool = () => {
                                   </div>
                                   <span>{index + 1}</span>
                                   <div className="hover:bg-wite h-full w-[1px] rounded bg-gray-500 hover:bg-gray-700 dark:bg-gray-400 dark:hover:bg-white"></div>
-                                  <div className="grow" dangerouslySetInnerHTML={{__html: question.question}}/>
+                                  <div
+                                    className="grow"
+                                    dangerouslySetInnerHTML={{
+                                      __html: question.question,
+                                    }}
+                                  />
                                   <div className="hover:bg-wite h-full w-[1px] rounded bg-gray-500 hover:bg-gray-700 dark:bg-gray-400 dark:hover:bg-white"></div>
 
                                   <div className="flex flex-col justify-center gap-2">
@@ -194,7 +202,6 @@ const QuestionPool = () => {
                                       size="xs"
                                       className="w-full"
                                       onClick={() => {
-                                        setEditQuestionModal(true);
                                         setQuestionId(question.id);
                                       }}
                                     >
