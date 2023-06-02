@@ -1,21 +1,39 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import useQuestionsApi from "../../api/questionsApi";
-import parseError from "../../utils/parseError";
 import prepareHTML from "../../utils/prepareHTML";
 import { toast } from "react-toastify";
+
+import { Spinner } from "flowbite-react";
 import QuestionForm from "../../components/forms/QuestionForm";
 
-const CreateQuestion = () => {
-  const { id } = useParams();
+const EditQuestion = () => {
+  const { id, questionId } = useParams();
   const navigate = useNavigate();
   const questionsApi = useQuestionsApi();
 
-  const [newQuestion, setNewQuestion] = useState({});
-  const [newAnswers, setNewAnswers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [question, setQuestion] = useState({});
+  const [answers, setAnswers] = useState([]);
+
+  const [updatedQuestion, setUpdatedQuestion] = useState({});
+  const [updatedAnswers, setUpdatedAnswers] = useState([]);
+
+  useEffect(() => {
+    const getQuestion = async () => {
+      setIsLoading(true);
+      const response = await questionsApi.getQuestion(questionId);
+      console.log(response);
+      setQuestion(response);
+      setAnswers(response.answers);
+      setIsLoading(false);
+    };
+    getQuestion();
+  }, []);
 
   const prepareAnswers = () => {
-    const answers = newAnswers.map((answer, index) => ({
+    const answers = updatedAnswers.map((answer, index) => ({
       answer: prepareHTML(answer.answer),
       order: index + 1,
       is_correct: answer.is_correct,
@@ -26,21 +44,21 @@ const CreateQuestion = () => {
   const prepareQuestion = () => {
     return {
       question_pool: id,
-      question: prepareHTML(newQuestion.question),
-      type: newQuestion.type,
+      question: prepareHTML(updatedQuestion.question),
+      type: updatedQuestion.type,
     };
   };
 
-  const createQuestion = async () => {
+  const handleSubmit = async () => {
     try {
       const answers = prepareAnswers();
       const question = prepareQuestion();
-      const response = await questionsApi.createQuestion({
+      const response = await questionsApi.updateQuestion(questionId, {
         ...question,
         answers: answers,
       });
       console.log(response);
-      toast.success("Question created");
+      toast.success("Question updated");
       navigate(`/question-pools/${id}`);
     } catch (error) {
       const fields = error.response.data.extra.fields;
@@ -67,21 +85,34 @@ const CreateQuestion = () => {
           ];
         });
       }
+      console.log(errorMessages.join("\n"));
       toast.error(<div>{errorMessages.map((m) => (<>{m}<br/></>))}</div>, {
         className: "w-[320px]",});
     }
   };
 
+
   return (
-    <div className="flex min-w-full flex-col">
-      <QuestionForm
-        setQuestion={setNewQuestion}
-        setAnswers={setNewAnswers}
-        onSubmit={createQuestion}
-        submitButtonText={"Create Question"}
-      />
-    </div>
+    <>
+      {isLoading ? (
+        <div className="w-full grid place-items-center">
+          <Spinner size={"xl"} />
+        </div>
+      ) : (
+        <div className="w-full">
+          <h1 className="mb-3">Edit Question:</h1>
+          <QuestionForm
+            existingQuestion={question}
+            existingAnswers={answers}
+            setQuestion={setUpdatedQuestion}
+            setAnswers={setUpdatedAnswers}
+            onSubmit={handleSubmit}
+            submitButtonText={"Update Question"}
+          />
+        </div>
+      )}
+    </>
   );
 };
 
-export default CreateQuestion;
+export default EditQuestion;

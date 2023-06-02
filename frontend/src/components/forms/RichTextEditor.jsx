@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
-import { toast } from "react-toastify";
-import axios from "axios";
+// import { toast } from "react-toastify";
+// import axios from "axios";
 
 const RichTextEditor = ({ initialState, setState }) => {
   const [editorState, setEditorState] = useState(initialState);
@@ -17,21 +17,21 @@ const RichTextEditor = ({ initialState, setState }) => {
     setState(state);
   };
 
-  const uploadImageCallBack = async (file) => {
-    try {
-      const data = new FormData();
-      data.append("image", file);
-      const response = await axios.post("https://api.imgur.com/3/image", data, {
-        headers: {
-          Authorization: `Client-ID ${import.meta.env.VITE_IMGUR_CLIENT_ID}`,
-        },
-      });
-      const json = await response.json();
-      return json;
-    } catch (error) {
-      toast.error("Error uploading image");
-    }
-  };
+  // const uploadImageCallBack = async (file) => {
+  //   try {
+  //     const data = new FormData();
+  //     data.append("image", file);
+  //     const response = await axios.post("https://api.imgur.com/3/image", data, {
+  //       headers: {
+  //         Authorization: `Client-ID ${import.meta.env.VITE_IMGUR_CLIENT_ID}`,
+  //       },
+  //     });
+  //     const json = await response.json();
+  //     return json;
+  //   } catch (error) {
+  //     toast.error("Error uploading image");
+  //   }
+  // };
 
   return (
     <Editor

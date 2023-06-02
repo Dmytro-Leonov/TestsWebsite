@@ -9,24 +9,18 @@ import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const QuestionForm = ({
-  existingQuestion,
-  existingAnswers,
+  existingQuestion = {},
+  existingAnswers = [],
   setQuestion,
   setAnswers,
+  onSubmit,
+  submitButtonText,
 }) => {
   let defaultAnswer = {
     answer: "",
     is_correct: false,
   };
-
-  // let newQuestion = {
-  //   id: existingQuestion?.id,
-  //   question: existingQuestion?.question || "",
-  //   type: existingQuestion?.type || "SINGLE_CHOICE",
-  //   state: EditorState.createWithContent(
-  //     stateFromHTML(existingQuestion?.question || "")
-  //   ),
-  // };
+  
   const [newQuestion, setNewQuestion] = useState({});
   const [newAnswers, setNewAnswers] = useState([]);
 
@@ -161,14 +155,19 @@ const QuestionForm = ({
             <legend className="mb-2 text-lg">Question type:</legend>
             <div className="flex items-center gap-2">
               <Radio
-                defaultChecked
                 id="SINGLE_CHOICE"
                 name="type"
                 value="SINGLE_CHOICE"
-                onClick={(e) => {
+                checked={newQuestion.type === "SINGLE_CHOICE"}
+                onChange={(e) => {
+                  setNewQuestion({
+                    id: newQuestion?.id,
+                    question: newQuestion.question,
+                    type: e.target.value,
+                  });
                   setQuestion({
                     id: newQuestion?.id,
-                    question: newQuestion?.question || "",
+                    question: newQuestion.question,
                     type: e.target.value,
                   });
                 }}
@@ -180,10 +179,16 @@ const QuestionForm = ({
                 id="MULTIPLE_CHOICE"
                 name="type"
                 value="MULTIPLE_CHOICE"
-                onClick={(e) => {
+                checked={newQuestion.type === "MULTIPLE_CHOICE"}
+                onChange={(e) => {
+                  setNewQuestion({
+                    id: newQuestion?.id,
+                    question: newQuestion.question,
+                    type: e.target.value,
+                  });
                   setQuestion({
                     id: newQuestion?.id,
-                    question: newQuestion?.question || "",
+                    question: newQuestion.question,
                     type: e.target.value,
                   });
                 }}
@@ -282,8 +287,9 @@ const QuestionForm = ({
           </DragDropContext>
         </div>
       }
-      <div className="ml-auto">
+      <div className="flex w-full justify-between">
         <Button onClick={addNewAnswer}>Add new answer</Button>
+        <Button onClick={onSubmit}>{submitButtonText}</Button>
       </div>
     </div>
   );

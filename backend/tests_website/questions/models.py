@@ -53,9 +53,6 @@ class Question(BaseModel):
 
     class Meta:
         ordering = ["order"]
-        unique_together = [
-            ("question_pool", "question"),
-        ]
         triggers = [
             pgtrigger.Trigger(
                 name="update_answers_order_on_update",
@@ -127,8 +124,11 @@ class Answer(BaseModel):
         return f"{self.order} - {self.answer}"
 
     class Meta:
-        unique_together = [
-            ("question", "answer"),
-            ("question", "order")
+        constraints = [
+            UniqueConstraint(
+                "question", "answer",
+                name="unique_answer_for_question",
+                violation_error_message="Duplicate answers"
+            )
         ]
         ordering = ["order"]

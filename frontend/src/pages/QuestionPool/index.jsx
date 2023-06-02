@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import useQuestionsApi from "../../api/questionsApi";
 import { toast } from "react-toastify";
 import parseError from "../../utils/parseError";
@@ -183,30 +183,31 @@ const QuestionPool = () => {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                               >
-                                <div className="flex grow flex-row gap-2 rounded-md border border-gray-500 p-2 hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white [&>*]:flex [&>*]:items-center">
+                                <div className="grid w-full grid-cols-[min-content_min-content_min-content_auto_min-content_min-content] gap-2 rounded-md border border-gray-500 p-2 hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white [&>*]:flex [&>*]:items-center">
                                   <div {...provided.dragHandleProps}>
                                     <MdDragIndicator size={18} />
                                   </div>
                                   <span>{index + 1}</span>
                                   <div className="hover:bg-wite h-full w-[1px] rounded bg-gray-500 hover:bg-gray-700 dark:bg-gray-400 dark:hover:bg-white"></div>
-                                  <div
-                                    className="grow"
-                                    dangerouslySetInnerHTML={{
-                                      __html: question.question,
-                                    }}
-                                  />
+                                  <div className="w-full min-w-full max-w-full">
+                                    <div
+                                      className="w-full min-w-full max-w-full break-words"
+                                      dangerouslySetInnerHTML={{
+                                        __html: question.question,
+                                      }}
+                                    />
+                                  </div>
                                   <div className="hover:bg-wite h-full w-[1px] rounded bg-gray-500 hover:bg-gray-700 dark:bg-gray-400 dark:hover:bg-white"></div>
 
                                   <div className="flex flex-col justify-center gap-2">
-                                    <Button
-                                      size="xs"
+                                    <Link
+                                      to={`edit-question/${question.id}`}
                                       className="w-full"
-                                      onClick={() => {
-                                        setQuestionId(question.id);
-                                      }}
                                     >
-                                      Edit
-                                    </Button>
+                                      <Button size="xs" className="w-full">
+                                        Edit
+                                      </Button>
+                                    </Link>
                                     <Button
                                       size={"xs"}
                                       className="w-full"

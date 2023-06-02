@@ -13,7 +13,9 @@ from tests_website.questions.utils import validate_max_question_pools
 from tests_website.questions.services import (
     question_create,
     question_pool_create,
-    question_pool_update
+    question_pool_update,
+    question_details,
+    question_update,
 )
 from tests_website.questions.selectors import question_pools_list, question_pool_details
 
@@ -32,9 +34,9 @@ class QuestionCreateApi(ApiAuthMixin, APIView):
         question = serializers.CharField()
         type = serializers.ChoiceField(choices=Question.QuestionType.choices)
         is_original = serializers.BooleanField(default=True)
-        order = serializers.IntegerField()
+        order = serializers.IntegerField(default=1)
         answers = inline_serializer(fields={
-            "id": serializers.IntegerField(required=False, read_only=True),
+            "id": serializers.IntegerField(read_only=True),
             "answer": serializers.CharField(),
             "is_correct": serializers.BooleanField(),
             "order": serializers.IntegerField(),
@@ -49,6 +51,25 @@ class QuestionCreateApi(ApiAuthMixin, APIView):
         serializer = self.Serializer(question)
 
         return Response(serializer.data, status.HTTP_201_CREATED)
+
+
+class QuestionUpdateApi(ApiAuthMixin, APIView):
+    class Serializer(serializers.Serializer):
+        question = serializers.CharField()
+        type = serializers.ChoiceField(choices=Question.QuestionType.choices)
+        answers = inline_serializer(fields={
+            "answer": serializers.CharField(),
+            "is_correct": serializers.BooleanField(),
+            "order": serializers.IntegerField(),
+        }, many=True)
+
+    def post(self, request, question_id):
+        serializer = self.Serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        question_update(user=self.request.user, id=question_id, **serializer.validated_data)
+
+        return Response(status.HTTP_200_OK)
 
 
 class QuestionPoolCreateApi(ApiAuthMixin, APIView):
@@ -179,3 +200,29 @@ class QuestionUpdateOrderApi(ApiAuthMixin, APIView):
         question.save()
 
         return Response(status=status.HTTP_200_OK)
+
+
+class QuestionDetailsApi(ApiAuthMixin, APIView):
+    class OutputSerializer(serializers.Serializer):
+        id = serializers.IntegerField()
+        question_pool_id = serializers.IntegerField()
+        question = serializers.CharField()
+        type = serializers.ChoiceField(choices=Question.QuestionType.choices)
+        answers = inline_serializer(fields={
+            "id": serializers.IntegerField(),
+            "answer": serializers.CharField(),
+            "is_correct": serializers.BooleanField(),
+            "order": serializers.IntegerField(),
+        }, many=True)
+
+    def get(self, request, question_id):
+        user = self.request.user
+        question = question_details(question_id=question_id)
+
+        if question.user != user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.OutputSerializer(question)
+
+        return Response(serializer.data, status.HTTP_200_OK)
+

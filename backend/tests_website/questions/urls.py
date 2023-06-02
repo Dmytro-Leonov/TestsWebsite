@@ -9,9 +9,13 @@ from tests_website.questions.apis import (
     QuestionPoolDeleteApi,
     QuestionDeleteApi,
     QuestionUpdateOrderApi,
+    QuestionDetailsApi,
+    QuestionUpdateApi,
 )
 
 urlpatterns = [
+    path("question/<int:question_id>/", QuestionDetailsApi.as_view()),
+    path("question/<int:question_id>/update/", QuestionUpdateApi.as_view()),
     path("question/create/", QuestionCreateApi.as_view()),
     path("question/<int:question_id>/delete/", QuestionDeleteApi.as_view()),
     path("question/<int:question_id>/update-order/", QuestionUpdateOrderApi.as_view()),
