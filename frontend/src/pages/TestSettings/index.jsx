@@ -67,7 +67,7 @@ const TestSettings = () => {
         setGiveExtraTime(res.give_extra_time);
         setQuestionPool(res.question_pool);
       } catch (err) {
-        console.log(err);
+        navigate("/tests");
       }
     };
     fetchTest();
@@ -99,9 +99,20 @@ const TestSettings = () => {
       setTestTimeLimitErrors(fields.time_limit || []);
       setTestAttemptsErrors(fields.attempts || []);
       setScoreErrors(fields.score || []);
-      setQuestionPoolErrors(fields.question_pool || []);
 
       if (fields.__all__) setTestNameErrors(fields.__all__);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteTest = async () => {
+    try {
+      setIsLoading(true);
+      await testsApi.delete(id);
+      navigate(`/tests`);
+    } catch (err) {
+      console.log(err);
     } finally {
       setIsLoading(false);
     }
@@ -289,8 +300,19 @@ const TestSettings = () => {
           isProcessing={isLoading}
           onClick={() => createTest()}
         >
-          Create test
+          Update
         </Button>
+        <Button
+          size={"md"}
+          color={"red"}
+          className="w-1/2 min-w-[300px] max-w-[450px]"
+          isProcessing={isLoading}
+          onClick={() => deleteTest()}
+        >
+          Delete
+        </Button>
+
+
       </form>
     </div>
   );

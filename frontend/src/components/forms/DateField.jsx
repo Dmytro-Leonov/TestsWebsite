@@ -18,7 +18,7 @@ export function DateField(props) {
 
   return (
     <div className={`flex flex-col items-start ${props.className || ""}`}>
-      <span {...labelProps} className="text-sm text-gray-800">
+      <span {...labelProps} className="text-sm text-gray-800 hidden">
         {props.label}
       </span>
       <div

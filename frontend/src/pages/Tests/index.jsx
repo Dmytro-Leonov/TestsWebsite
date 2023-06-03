@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useTestsApi from "../../api/testsApi";
 
 import parseError from "../../utils/parseError";
+import trim from "../../utils/trim";
 import { formatDateTime } from "../../utils/formatDateTime";
 
 import { Link } from "react-router-dom";
@@ -46,14 +47,14 @@ const Groups = () => {
               <Spinner size="xl" />
             </div>
           ) : (
-            <div className="mt-2 flex">
+            <div className="mt-2 flex gap-2 flex-wrap">
               {tests.map((test) => (
                 <div
                   key={test.id}
                   className="rounded-md border border-gray-500 p-2 transition-colors hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white"
                 >
                   <Link to={`/tests/${test.id}`}>
-                    <span>{test.name}</span>
+                    <span>{trim(test.name)}</span>
                     <p>Craeted: {formatDateTime(test.created_at)}</p>
                   </Link>
                 </div>

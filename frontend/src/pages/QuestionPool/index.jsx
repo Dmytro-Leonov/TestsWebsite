@@ -154,15 +154,15 @@ const QuestionPool = () => {
             </div>
           </div>
           <div className="grow">
+            <Button
+              size="xs"
+              className="w-max mb-3"
+              onClick={() => navigate("add-question")}
+            >
+              Add question
+            </Button>
             {questions.length > 0 ? (
               <div className="flex flex-col gap-3">
-                <Button
-                  size="xs"
-                  className="w-max"
-                  onClick={() => navigate("add-question")}
-                >
-                  Add question
-                </Button>
                 <DragDropContext onDragEnd={handleOnDragEnd}>
                   <Droppable droppableId="questions">
                     {(provided) => (

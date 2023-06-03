@@ -8,6 +8,7 @@ import { Button, TextInput, Select } from "flowbite-react";
 
 import { DateField } from "../../components/forms/DateField";
 
+import { toast } from "react-toastify";
 import DisplayFieldErrors from "../../components/forms/DisplayFieldErrors";
 
 import { now, getLocalTimeZone } from "@internationalized/date";
@@ -100,7 +101,6 @@ const CreateTest = () => {
   const createTest = async () => {
     try {
       setIsLoading(true);
-      // console.log(startDate.getSelectedDate());
       const res = await testsApi.create({
         question_pool: questionPool,
         group: group,
@@ -117,7 +117,7 @@ const CreateTest = () => {
         show_answers_after_test: showAnswersAfterTest,
         give_extra_time: giveExtraTime,
       });
-
+      toast.success("Test created successfully");
       navigate(`/tests/${res.id}`);
     } catch (err) {
       const { fields } = parseError(err);
@@ -255,16 +255,16 @@ const CreateTest = () => {
         <div className="w-1/2 min-w-[300px] max-w-[450px]">
           <p className=" text-lg">Start date</p>
           <DisplayFieldErrors errors={startDateErrors} />
-          <DateField onChange={setStartDate} placeholderValue={now(getLocalTimeZone())}/>
+          <DateField label="Start date" onChange={setStartDate} placeholderValue={now(getLocalTimeZone())}/>
         </div>
         <div className="w-1/2 min-w-[300px] max-w-[450px]">
           <p className=" text-lg">End date</p>
           <DisplayFieldErrors errors={endDateErrors} />
-          <DateField onChange={setEndDate} placeholderValue={now(getLocalTimeZone())}/>
+          <DateField label="End date" onChange={setEndDate} placeholderValue={now(getLocalTimeZone())}/>
         </div>
 
         <div className="w-1/2 min-w-[300px] max-w-[450px]">
-          <p className=" text-lg">Attempts</p>
+          <p className="text-lg">Attempts</p>
           <DisplayFieldErrors errors={testAttemptsErrors} />
           <Select
             value={testAttempts}

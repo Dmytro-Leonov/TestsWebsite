@@ -77,7 +77,7 @@ class Question(BaseModel):
             pgtrigger.Trigger(
                 name="update_answers_order_on_delete",
                 operation=pgtrigger.Delete,
-                when=pgtrigger.Before,
+                when=pgtrigger.After,
                 func=
                 """
                 IF NOT pg_trigger_depth() > 1 THEN

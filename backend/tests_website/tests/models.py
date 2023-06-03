@@ -41,6 +41,7 @@ class Test(BaseModel):
             raise ValidationError({"end_date": "End date is required"})
         if self.start_date >= self.end_date:
             raise ValidationError({"end_date": "End date cannot be before start date"})
+        print(self.end_date, get_now())
         if self.end_date < get_now():
             raise ValidationError({"end_date": "End date cannot be in the past"})
         if self.time_limit > self.end_date - self.start_date:

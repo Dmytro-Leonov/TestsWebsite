@@ -6,7 +6,7 @@ from rest_framework import serializers, status
 from tests_website.tests.models import Test
 from tests_website.api.mixins import ApiAuthMixin
 
-from tests_website.tests.services import test_create
+from tests_website.tests.services import test_create, test_delete
 from tests_website.tests.selectors import test_list_created_by_user
 
 
@@ -57,7 +57,6 @@ class TestCreateApi(ApiAuthMixin, APIView):
     def post(self, request):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print(serializer.data)
         test = test_create(user=self.request.user, **serializer.validated_data)
         return Response(self.OutputSerializer(test).data, status=status.HTTP_201_CREATED)
 
@@ -105,3 +104,13 @@ class TestListCreatedByUserApi(ApiAuthMixin, APIView):
     def get(self, request):
         tests = test_list_created_by_user(user=self.request.user)
         return Response(self.OutputSerializer(tests, many=True).data)
+
+
+class TestDeleteApi(ApiAuthMixin, APIView):
+    def delete(self, request, test_id):
+        test = get_object_or_404(Test, id=test_id)
+        if test.user != self.request.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        test_delete(test=test)
+        return Response(status=status.HTTP_204_NO_CONTENT)

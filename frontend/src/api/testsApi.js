@@ -14,6 +14,11 @@ const useTestsApi = () => {
       const response = await axios.get(url);
       return response.data;
     },
+    delete: async (id) => {
+      const url = `${id}/delete/`;
+      const response = await axios.delete(url);
+      return response.data;
+    },
     listCreated: async () => {
       const url = "list-created/";
       const response = await axios.get(url);
