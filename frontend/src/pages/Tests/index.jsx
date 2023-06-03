@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-
+import { useNavigate } from "react-router-dom";
 import useTestsApi from "../../api/testsApi";
 
 import parseError from "../../utils/parseError";
+import { formatDateTime } from "../../utils/formatDateTime";
 
 import { Link } from "react-router-dom";
 
@@ -12,9 +13,26 @@ import { Spinner, Tabs, Button } from "flowbite-react";
 
 const Groups = () => {
   const testsApi = useTestsApi();
+  const navigate = useNavigate();
 
   const [isLoadingTests, setIsLoadingTests] = useState(true);
 
+  const [tests, setTests] = useState([]);
+
+  useEffect(() => {
+    const fetchTests = async () => {
+      try {
+        setIsLoadingTests(true);
+        const res = await testsApi.listCreated();
+        setTests(res);
+        setIsLoadingTests(false);
+      } catch (error) {
+        navigate("/");
+      }
+    };
+
+    fetchTests();
+  }, []);
 
   return (
     <>
@@ -28,7 +46,19 @@ const Groups = () => {
               <Spinner size="xl" />
             </div>
           ) : (
-            <div></div>
+            <div className="mt-2 flex">
+              {tests.map((test) => (
+                <div
+                  key={test.id}
+                  className="rounded-md border border-gray-500 p-2 transition-colors hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white"
+                >
+                  <Link to={`/tests/${test.id}`}>
+                    <span>{test.name}</span>
+                    <p>Craeted: {formatDateTime(test.created_at)}</p>
+                  </Link>
+                </div>
+              ))}
+            </div>
           )}
         </Tabs.Item>
         <Tabs.Item title="Tests to complete">

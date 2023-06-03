@@ -8,6 +8,16 @@ const useTestsApi = () => {
       const url = "create/";
       const response = await axios.post(url, data);
       return response.data;
+    },
+    get: async (id) => {
+      const url = `${id}/`;
+      const response = await axios.get(url);
+      return response.data;
+    },
+    listCreated: async () => {
+      const url = "list-created/";
+      const response = await axios.get(url);
+      return response.data;
     }
   };
 

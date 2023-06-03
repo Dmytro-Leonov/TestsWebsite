@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-aria/datepicker": "^3.4.1",
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
     "draft-js": "^0.11.7",

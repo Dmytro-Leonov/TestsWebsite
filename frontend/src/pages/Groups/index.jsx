@@ -45,7 +45,6 @@ const Groups = () => {
 
   const createGroup = async () => {
     try {
-      console.log("triggered")
       const newGroup = await groupsAPI.create(groupNameRef.current.value);
       if (newGroup) {
         toast.success("Group created");

@@ -9,8 +9,8 @@ from tests_website.common.models import BaseModel
 
 class QuestionPool(BaseModel):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="question_pools")
-
     name = models.CharField(max_length=100, validators=[MinLengthValidator(1)])
+    questions_count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -85,6 +85,11 @@ class Question(BaseModel):
                     SET "order" = "order" - 1
                     WHERE "order" > OLD."order" AND question_pool_id = OLD.question_pool_id;
                 END IF;
+                
+                UPDATE questions_questionpool
+                SET questions_count = questions_count - 1
+                WHERE id = OLD.question_pool_id;
+                
                 RETURN OLD;
                 """
             ),
@@ -99,6 +104,11 @@ class Question(BaseModel):
                     SET "order" = "order" + 1
                     WHERE "order" >= NEW."order" AND question_pool_id = NEW.question_pool_id;
                 END IF;
+                
+                UPDATE questions_questionpool
+                SET questions_count = questions_count + 1
+                WHERE id = NEW.question_pool_id;
+                
                 RETURN NEW;
                 """
             ),

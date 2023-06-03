@@ -11,25 +11,40 @@ from datetime import timedelta
 
 class Test(BaseModel):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="created_tests")
+    question_pool = models.ForeignKey("questions.QuestionPool", on_delete=models.SET_NULL, null=True, blank=True)
+    group = models.ForeignKey("groups.Group", on_delete=models.CASCADE)
+    questions = models.ManyToManyField("questions.Question", through="TestQuestion", related_name="tests")
 
     name = models.CharField(max_length=100, validators=[MinLengthValidator(1)])
     description = models.TextField(max_length=500, blank=True)
+
     time_limit = models.DurationField(validators=[
         MinValueValidator(timedelta(seconds=1)),
         MaxValueValidator(timedelta(hours=24))
     ])
+    start_date = models.DateTimeField(blank=False, null=False)
+    end_date = models.DateTimeField(blank=False, null=False)
+
     attempts = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
-    number_of_questions = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
     score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
 
     shuffle_questions = models.BooleanField()
     shuffle_answers = models.BooleanField()
     show_score_after_test = models.BooleanField()
     show_answers_after_test = models.BooleanField()
-
     give_extra_time = models.BooleanField()
 
-    questions = models.ManyToManyField("questions.Question", through="TestQuestion", related_name="tests")
+    def clean(self):
+        if not self.start_date:
+            raise ValidationError({"start_date": "Start date is required"})
+        if not self.end_date:
+            raise ValidationError({"end_date": "End date is required"})
+        if self.start_date >= self.end_date:
+            raise ValidationError({"end_date": "End date cannot be before start date"})
+        if self.end_date < get_now():
+            raise ValidationError({"end_date": "End date cannot be in the past"})
+        if self.time_limit > self.end_date - self.start_date:
+            raise ValidationError({"time_limit": "Time limit cannot be longer than test duration"})
 
     class Meta:
         constraints = [

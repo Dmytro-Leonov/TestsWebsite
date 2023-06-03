@@ -99,10 +99,9 @@ class QuestionPoolCreateApi(ApiAuthMixin, APIView):
 
 
 class QuestionPoolListApi(ApiAuthMixin, APIView):
-    class OutputSerializer(serializers.Serializer):
+    class OutputSerializer(serializers.ModelSerializer):
         id = serializers.IntegerField()
         name = serializers.CharField()
-        questions_count = serializers.IntegerField()
 
         class Meta:
             model = QuestionPool

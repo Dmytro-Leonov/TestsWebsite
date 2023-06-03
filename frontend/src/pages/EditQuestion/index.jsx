@@ -24,7 +24,6 @@ const EditQuestion = () => {
     const getQuestion = async () => {
       setIsLoading(true);
       const response = await questionsApi.getQuestion(questionId);
-      console.log(response);
       setQuestion(response);
       setAnswers(response.answers);
       setIsLoading(false);
@@ -53,11 +52,10 @@ const EditQuestion = () => {
     try {
       const answers = prepareAnswers();
       const question = prepareQuestion();
-      const response = await questionsApi.updateQuestion(questionId, {
+      await questionsApi.updateQuestion(questionId, {
         ...question,
         answers: answers,
       });
-      console.log(response);
       toast.success("Question updated");
       navigate(`/question-pools/${id}`);
     } catch (error) {
