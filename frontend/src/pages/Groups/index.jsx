@@ -60,7 +60,7 @@ const Groups = () => {
 
   return (
     <>
-      <Tabs.Group aria-label="Tabs with underline" style="underline">
+      <Tabs.Group aria-label="Tabs with underline" style="underline" className="w-full">
         <Tabs.Item title="Created groups" onClick>
           <Button onClick={() => setShowModal(true)}>Create new group</Button>
           <Modal

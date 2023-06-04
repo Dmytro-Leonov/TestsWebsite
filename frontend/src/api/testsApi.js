@@ -14,6 +14,11 @@ const useTestsApi = () => {
       const response = await axios.get(url);
       return response.data;
     },
+    update: async (id, data) => {
+      const url = `${id}/update/`;
+      const response = await axios.post(url, data);
+      return response.data;
+    },
     delete: async (id) => {
       const url = `${id}/delete/`;
       const response = await axios.delete(url);
@@ -21,6 +26,11 @@ const useTestsApi = () => {
     },
     listCreated: async () => {
       const url = "list-created/";
+      const response = await axios.get(url);
+      return response.data;
+    },
+    listToComplete: async () => {
+      const url = "list-to-complete/";
       const response = await axios.get(url);
       return response.data;
     }
