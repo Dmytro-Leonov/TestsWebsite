@@ -115,7 +115,7 @@ const CreateTest = () => {
         shuffle_answers: shuffleAnswers,
         show_score_after_test: showScoreAfterTest,
         show_answers_after_test: showAnswersAfterTest,
-        give_extra_time: giveExtraTime,
+        // give_extra_time: giveExtraTime,
       });
       toast.success("Test created successfully");
       navigate(`/tests/${res.id}`);
@@ -341,7 +341,7 @@ const CreateTest = () => {
           </Select>
         </div>
 
-        <div className="w-1/2 min-w-[300px] max-w-[450px]">
+        {/* <div className="w-1/2 min-w-[300px] max-w-[450px]">
           <p className=" text-lg">Give extra time</p>
           <Select
             value={giveExtraTime}
@@ -350,7 +350,7 @@ const CreateTest = () => {
             <option value={true}>Yes</option>
             <option value={false}>No</option>
           </Select>
-        </div>
+        </div> */}
 
         <Button
           size={"md"}

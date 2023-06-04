@@ -32,7 +32,7 @@ class Test(BaseModel):
     shuffle_answers = models.BooleanField()
     show_score_after_test = models.BooleanField()
     show_answers_after_test = models.BooleanField()
-    give_extra_time = models.BooleanField()
+    give_extra_time = models.BooleanField(default=False)
 
     def clean(self):
         if not self.start_date:
@@ -119,3 +119,29 @@ class TestQuestion(BaseModel):
 
     def __str__(self):
         return f"{self.test} - {self.question}"
+
+
+class Attempt(BaseModel):
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    test = models.ForeignKey("Test", on_delete=models.CASCADE, related_name="attempts_set")
+
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+
+
+class AttemptQuestion(BaseModel):
+    attempt = models.ForeignKey("Attempt", on_delete=models.CASCADE)
+    question = models.ForeignKey("questions.Question", on_delete=models.CASCADE)
+    order = models.IntegerField(db_index=True)
+    points = models.PositiveIntegerField(default=0)
+    has_answer = models.BooleanField(default=False)
+    marked_as_answered = models.BooleanField(default=False)
+
+
+class AttemptAnswer(BaseModel):
+    attempt_question = models.ForeignKey("AttemptQuestion", on_delete=models.CASCADE)
+    answer = models.ForeignKey("questions.Answer", on_delete=models.CASCADE)
+    order = models.IntegerField(db_index=True)
+    is_selected = models.BooleanField()
+    is_correct = models.BooleanField()
+    is_marked = models.BooleanField()

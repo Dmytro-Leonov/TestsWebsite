@@ -25,8 +25,8 @@ class Group(BaseModel):
 
 
 class GroupMember(BaseModel):
-    group = models.ForeignKey("Group", on_delete=models.CASCADE, related_name="+")
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="+")
+    group = models.ForeignKey("Group", on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
 
     class Meta:
         constraints = [

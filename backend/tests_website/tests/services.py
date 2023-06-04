@@ -3,7 +3,9 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
-from tests_website.tests.models import Test, TestQuestion
+from tests_website.common.services import model_update
+from tests_website.common.utils import get_now
+from tests_website.tests.models import Test, TestQuestion, Attempt, AttemptAnswer, AttemptQuestion
 from tests_website.questions.models import QuestionPool, Question
 from tests_website.users.models import User
 from tests_website.groups.models import Group
@@ -11,22 +13,22 @@ from tests_website.groups.models import Group
 
 @transaction.atomic
 def test_create(
-    *,
-    user: User,
-    question_pool: QuestionPool,
-    group: Group,
-    name: str,
-    description: str = "",
-    time_limit: datetime.timedelta,
-    start_date: datetime.datetime,
-    end_date: datetime.datetime,
-    attempts: int,
-    score: int,
-    shuffle_questions: bool = False,
-    shuffle_answers: bool = False,
-    show_score_after_test: bool = False,
-    show_answers_after_test: bool = False,
-    give_extra_time: bool = False,
+        *,
+        user: User,
+        question_pool: QuestionPool,
+        group: Group,
+        name: str,
+        description: str = "",
+        time_limit: datetime.timedelta,
+        start_date: datetime.datetime,
+        end_date: datetime.datetime,
+        attempts: int,
+        score: int,
+        shuffle_questions: bool = False,
+        shuffle_answers: bool = False,
+        show_score_after_test: bool = False,
+        show_answers_after_test: bool = False,
+        give_extra_time: bool = False,
 ):
     if question_pool.questions.count() == 0:
         raise ValidationError({"question_pool": "Question pool must contain at least one question"})
@@ -82,4 +84,44 @@ def test_delete(*, test: Test):
     print(test)
     Question.objects.filter(testquestion__test_id=test.id).delete()
     test.delete()
+
+
+def test_update(*, test: Test, data):
+    fields = ["name", "description", "time_limit", "start_date", "end_date", "attempts", "score",
+              "shuffle_questions", "shuffle_answers", "show_score_after_test", "show_answers_after_test",
+              "give_extra_time"]
+
+    # check if test has started and if so, do not allow to change
+    # start_date, end_date, attempts, score, time_limit, give_extra_time, shuffle_questions, shuffle_answers
+    if test.start_date < get_now():
+        fields = [field for field in fields if field not in
+                  ["start_date", "end_date", "attempts", "score", "time_limit", "give_extra_time",
+                   "shuffle_questions", "shuffle_answers"]]
+
+    test, _ = model_update(instance=test, fields=fields, data=data)
+
+    return test
+
+
+@transaction.atomic
+def test_start(*, user: Test, test: Test):
+    # check if user is in a group that is assigned to the test
+    if not test.group.members.filter(id=user.id).exists():
+        raise ValidationError("User is not assigned to the test")
+
+    # check if test has started
+    if test.start_date > get_now():
+        raise ValidationError("Test has not started yet")
+
+    # check if test has ended
+    if test.end_date < get_now():
+        raise ValidationError("Test has already ended")
+
+    # check if user has available attempts
+    if test.attempts <= Attempt.objects.filter(user=user, test=test).count():
+        raise ValidationError("User has no available attempts")
+
+
+
+
 
