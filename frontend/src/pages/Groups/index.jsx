@@ -103,7 +103,7 @@ const Groups = () => {
               <div className="mt-5 flex flex-wrap gap-5">
                 {createdGroups.map((group) => {
                   return (
-                    <Link key={group.id} to={`/group/${group.id}`}>
+                    <Link key={group.id} to={`/groups/${group.id}`}>
                       <GroupCard {...group} />
                     </Link>
                   );
@@ -122,7 +122,7 @@ const Groups = () => {
               <div className="flex flex-wrap gap-5">
                 {groupsAsAMember.map((group) => {
                   return (
-                    <Link key={group.id} to={`/group/${group.id}`}>
+                    <Link key={group.id} to={`/groups/${group.id}`}>
                       <GroupCard {...group} />
                     </Link>
                   );

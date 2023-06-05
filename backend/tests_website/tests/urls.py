@@ -7,6 +7,10 @@ from tests_website.tests.apis import (
     TestDeleteApi,
     TestUpdateApi,
     TestListToCompleteApi,
+    TestGetPreviewApi,
+    TestStartApi,
+    TestAttemptAllQuestionsList,
+    TestAttemptGetQuestion,
 )
 
 urlpatterns = [
@@ -16,4 +20,8 @@ urlpatterns = [
     path("list-created/", TestListCreatedByUserApi.as_view(), name="test-list-created"),
     path("<int:test_id>/update/", TestUpdateApi.as_view(), name="test-update"),
     path("list-to-complete/", TestListToCompleteApi.as_view(), name="test-list-to-complete"),
+    path("<int:test_id>/preview/", TestGetPreviewApi.as_view(), name="test-get-preview"),
+    path("<int:test_id>/start/", TestStartApi.as_view(), name="test-start"),
+    path("attempt/<int:attempt_id>/all-questions/", TestAttemptAllQuestionsList.as_view(), name="test-attempt-all-questions-list"),
+    path("attempt/<int:attempt_id>/question/<int:question_number>/", TestAttemptGetQuestion.as_view(), name="test-attempt-get-question"),
 ]

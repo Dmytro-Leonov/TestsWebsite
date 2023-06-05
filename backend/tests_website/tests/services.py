@@ -1,7 +1,9 @@
 import datetime
+import random
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 
 from tests_website.common.services import model_update
 from tests_website.common.utils import get_now
@@ -107,7 +109,7 @@ def test_update(*, test: Test, data):
 def test_start(*, user: Test, test: Test):
     # check if user is in a group that is assigned to the test
     if not test.group.members.filter(id=user.id).exists():
-        raise ValidationError("User is not assigned to the test")
+        raise ValidationError("You are not assigned to the test")
 
     # check if test has started
     if test.start_date > get_now():
@@ -119,9 +121,42 @@ def test_start(*, user: Test, test: Test):
 
     # check if user has available attempts
     if test.attempts <= Attempt.objects.filter(user=user, test=test).count():
-        raise ValidationError("User has no available attempts")
+        raise ValidationError("You have no available attempts")
 
+    # check if user has already started the test
+    if Attempt.objects.filter(user=user, test=test, end_date__gte=get_now()).exists():
+        raise ValidationError("You have already started this test")
 
+    # create attempt
+    attempt = Attempt.objects.create(
+        user=user,
+        test=test,
+        start_date=get_now(),
+        end_date=min(get_now() + test.time_limit, test.end_date)
+    )
 
+    # create attempt questions and attempt answers
+    test_questions = TestQuestion.objects.filter(test=test).prefetch_related("question__answers")
 
+    # shuffle questions if needed
+    if test.shuffle_questions:
+        test_questions = list(test_questions)
+        random.shuffle(test_questions)
 
+    for i, test_question in enumerate(test_questions):
+        attempt_question = AttemptQuestion.objects.create(
+            attempt=attempt,
+            question=test_question.question,
+            order=i + 1
+        )
+        answers = test_question.question.answers.all()
+
+        # shuffle answers if needed
+        if test.shuffle_answers:
+            answers = list(answers)
+            random.shuffle(answers)
+
+        for order, answer in enumerate(answers):
+            AttemptAnswer.objects.create(attempt_question=attempt_question, answer=answer, order=order + 1)
+
+    return attempt.id

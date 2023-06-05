@@ -128,6 +128,9 @@ class Attempt(BaseModel):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 
+    def __str__(self):
+        return f"{self.id} - {self.user} - {self.test}"
+
 
 class AttemptQuestion(BaseModel):
     attempt = models.ForeignKey("Attempt", on_delete=models.CASCADE)
@@ -142,6 +145,23 @@ class AttemptAnswer(BaseModel):
     attempt_question = models.ForeignKey("AttemptQuestion", on_delete=models.CASCADE)
     answer = models.ForeignKey("questions.Answer", on_delete=models.CASCADE)
     order = models.IntegerField(db_index=True)
-    is_selected = models.BooleanField()
-    is_correct = models.BooleanField()
-    is_marked = models.BooleanField()
+    is_selected = models.BooleanField(default=False)
+    is_correct = models.BooleanField(default=False)
+
+
+class Log(BaseModel):
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    attempt = models.ForeignKey("Attempt", on_delete=models.CASCADE)
+    question = models.ForeignKey("questions.Question", on_delete=models.CASCADE)
+    answer = models.ForeignKey("questions.Answer", on_delete=models.CASCADE, null=True, blank=True)
+
+    class LogAction(models.TextChoices):
+        ENTERED_QUESTION = "ENTERED_QUESTION", "Entered question"
+        SELECTED_ANSWER = "SELECTED_ANSWER", "Selected answer"
+        DESELECTED_ANSWER = "DESELECTED_ANSWER", "Deselected answer"
+        MARKED_AS_ANSWERED = "MARKED_AS_ANSWERED", "Marked as answered"
+
+    action = models.CharField(max_length=20, choices=LogAction.choices)
+
+    def __str__(self):
+        return f"{self.user} - {self.action}"

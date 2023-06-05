@@ -33,6 +33,26 @@ const useTestsApi = () => {
       const url = "list-to-complete/";
       const response = await axios.get(url);
       return response.data;
+    },
+    getPreview: async (id) => {
+      const url = `${id}/preview/`;
+      const response = await axios.get(url);
+      return response.data;
+    },
+    startTest: async (id) => {
+      const url = `${id}/start/`;
+      const response = await axios.post(url);
+      return response.data;
+    },
+    getAttemptQuestions: async (attemptId) => {
+      const url = `attempt/${attemptId}/all-questions/`;
+      const response = await axios.get(url);
+      return response.data;
+    },
+    getAttemptQuestion: async (attemptId, questionId) => {
+      const url = `attempt/${attemptId}/question/${questionId}/`;
+      const response = await axios.get(url);
+      return response.data;
     }
   };
 
