@@ -44,7 +44,7 @@ const Header = () => {
             <>
               <li>
                 <Link
-                  to="/tests"
+                  to="/tests?tab=created"
                   className="text-md py-2 font-medium uppercase transition-colors hover:text-gray-700 dark:hover:text-white"
                 >
                   Tests

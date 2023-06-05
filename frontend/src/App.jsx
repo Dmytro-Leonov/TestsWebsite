@@ -22,6 +22,7 @@ import QuestionPools from "./pages/QuestionPools";
 import QuestionPool from "./pages/QuestionPool";
 import CreateQuestion from "./pages/CreateQuestoin";
 import EditQuestion from "./pages/EditQuestion";
+import Attempt from "./pages/Attempt";
 
 import settings from "./data/toastContainerSettings";
 
@@ -79,7 +80,7 @@ const App = () => {
               <Route exact path="/login" element={<Login />} />
               <Route exact path="/tests" element={<Tests />} />
               <Route exact path="/groups" element={<Groups />} />
-              <Route exact path="/group/:id" element={<Group />} />
+              <Route exact path="/groups/:id" element={<Group />} />
               <Route exact path="/profile" element={<Profile />} />
               <Route exact path="/tests/create" element={<CreateTest />} />
               <Route exact path="/tests/:id" element={<TestSettings />} />
@@ -87,6 +88,7 @@ const App = () => {
               <Route exact path="/question-pools/:id" element={<QuestionPool />} />
               <Route exact path="/question-pools/:id/add-question" element={<CreateQuestion />} />
               <Route exact path="/question-pools/:id/edit-question/:questionId" element={<EditQuestion />} />
+              <Route exact path="tests/:testId/attempt/:attemptId/question/:questionNumber" element={<Attempt />} />
             </Routes>
           </main>
           <Footer />
