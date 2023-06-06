@@ -1,10 +1,12 @@
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import Count, F, Subquery, OuterRef, IntegerField, Q, Exists, Max, Sum
+from django.db.models import Count, F, Subquery, OuterRef, IntegerField, Q, Exists, Max, Sum, Min, Avg, \
+    ExpressionWrapper, FloatField, Prefetch
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
 
+from tests_website.questions.models import Question, Answer
 from tests_website.common.utils import get_now
 from tests_website.tests.models import Test, Log, Attempt, AttemptQuestion, AttemptAnswer
 from tests_website.users.models import User
@@ -153,3 +155,160 @@ def get_user_attempts(*, user: User, test_id: int):
     )
 
     return attempts
+
+
+def test_stats(*, user: User, test_id: int):
+
+    now = get_now()
+
+    test_qs = (
+        Test
+        .objects
+        .filter(
+            attempts_set__end_date__lt=now
+        )
+        .annotate(
+            total_questions_answered=Count(
+                "attempts_set__attemptquestion",
+            ),
+            correctly_answered_questions=Count(
+                "attempts_set__attemptquestion",
+                filter=Q(
+                    attempts_set__attemptquestion__has_answer=True,
+                    attempts_set__attemptquestion__points__gt=0,
+                )
+            ),
+            incorrectly_answered_questions=Count(
+                "attempts_set__attemptquestion",
+                filter=Q(
+                    attempts_set__attemptquestion__has_answer=True,
+                    attempts_set__attemptquestion__points__lt=1,
+                )
+            ),
+            not_answered_questions=Count(
+                "attempts_set__attemptquestion",
+                filter=Q(
+                    attempts_set__attemptquestion__has_answer=False,
+                )
+            ),
+        )
+    )
+
+    test = test_qs.filter(id=test_id).first()
+
+    if not test:
+        raise ValidationError("No stats available")
+
+    if test.user != user:
+        raise PermissionDenied("You are not the father")
+
+    attempts = (
+        Attempt
+        .objects
+        .filter(test_id=test_id, end_date__lt=now)
+        .annotate(
+            score=ExpressionWrapper(
+                Sum("attemptquestion__points") / Count("attemptquestion") * F("test__score"),
+                output_field=FloatField(),
+            ),
+        )
+        .aggregate(
+            max_score=Max("score"),
+            min_score=Min("score"),
+            avg_score=Avg("score"),
+            max_time_taken=Max(F("end_date") - F("start_date")),
+            min_time_taken=Min(F("end_date") - F("start_date")),
+            avg_time_taken=Avg(F("end_date") - F("start_date")),
+        )
+    )
+
+    questions = (
+        Question
+        .objects
+        .filter(tests=test_id)
+        .annotate(
+            correctly_answered=Count(
+                "attemptquestion",
+                filter=Q(
+                    attemptquestion__attempt__test_id=test_id,
+                    attemptquestion__attempt__end_date__lt=now,
+                    attemptquestion__points__gt=0,
+                )
+            ),
+            incorrectly_answered=Count(
+                "attemptquestion",
+                filter=Q(
+                    attemptquestion__attempt__test_id=test_id,
+                    attemptquestion__attempt__end_date__lt=now,
+                    attemptquestion__has_answer=True,
+                    attemptquestion__points__lt=1,
+                )
+            ),
+            not_answered=Count(
+                "attemptquestion",
+                filter=Q(
+                    attemptquestion__attempt__test_id=test_id,
+                    attemptquestion__attempt__end_date__lt=now,
+                    attemptquestion__has_answer=False,
+                )
+            )
+        )
+        .prefetch_related(
+            Prefetch(
+                "answers",
+                queryset=Answer.objects.annotate(
+                    chosen=Count(
+                        "attemptanswer",
+                        filter=Q(
+                            attemptanswer__attempt_question__attempt__test_id=test_id,
+                            attemptanswer__attempt_question__attempt__end_date__lt=now,
+                            attemptanswer__is_selected=True,
+                        )
+                    )
+                )
+            )
+        )
+    )
+    # print(questions)
+    # print(questions[0].answers.all(), questions[1].answers.all())
+    # print(questions[0].answers.all()[0].chosen, questions[0].answers.all()[1].chosen, questions[0].answers.all()[2].chosen)
+    # print(questions[1].answers.all()[0].chosen, questions[1].answers.all()[1].chosen)
+
+    # print(questions[0])
+
+    # example = [
+    #     {
+    #         "question": "adsf",
+    #         "correctly_answered": 10,
+    #         "incorrectly_answered": 20,
+    #         "not_answered": 30,
+    #         "answers": [
+    #             {
+    #                 "answer": "asdf",
+    #                 "chosen": 10,
+    #             },
+    #             {
+    #                 "answer": "asdf",
+    #                 "chosen": 5,
+    #             },
+    #         ]
+    #     },
+    #     {
+    #         "question": "adsf",
+    #         "correctly_answered": 10,
+    #         "incorrectly_answered": 20,
+    #         "not_answered": 30,
+    #         "answers": [
+    #             {
+    #                 "answer": "asdf",
+    #                 "chosen": 10,
+    #             },
+    #             {
+    #                 "answer": "asdf",
+    #                 "chosen": 5,
+    #             },
+    #         ]
+    #     }
+    # ]
+
+    return test, attempts, questions

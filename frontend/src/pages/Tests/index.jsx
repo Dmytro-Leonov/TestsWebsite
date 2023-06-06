@@ -138,10 +138,10 @@ const Groups = () => {
                     }
                     <p>Created: {formatDateTime(test.created_at)}</p>
                     <div className="mt-2 flex gap-2">
-                      <Link to={`/tests/${test.id}/users-stats`}>
-                        <Button size="xs">Users stats</Button>
+                      <Link to={`/tests/${test.id}/answers-stats`}>
+                        <Button size="xs">Answers stats</Button>
                       </Link>
-                      <Link to={`/tests/${test.id}/questions-stats`}>
+                      <Link to={`/tests/${test.id}/test-stats`}>
                         <Button size="xs">Questions Stats</Button>
                       </Link>
                     </div>
@@ -237,7 +237,7 @@ const Groups = () => {
                         {test.test.show_score_after_test && (
                           <>
                             <span>|</span>
-                            <span>{attempt.score}</span>
+                            <span>{Number(attempt.score.toFixed(2))}</span>
                           </>
                         )}
                         <span>|</span>

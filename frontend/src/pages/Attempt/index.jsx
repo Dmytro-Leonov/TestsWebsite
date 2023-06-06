@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import useTestsApi from "../../api/testsApi";
 import { Button, Spinner, Radio, Checkbox } from "flowbite-react";
@@ -153,22 +153,18 @@ const Attempt = () => {
   const formatTime = (t) => {
     if (t < 10) return `0${t}`;
     return t;
-  }
+  };
 
   const countdownRenderer = ({ hours, minutes, seconds, completed }) => {
     if (completed) {
-      finishAttempt()
+      finishAttempt();
       return <span className="text-2xl font-bold">Time is out</span>;
     } else {
       // Render a countdown
       return (
         <span className="text-2xl font-bold">
-          {
-            hours !== 0 ? `${formatTime(hours)}:` : ''
-          }
-          {
-            minutes !== 0 ? `${formatTime(minutes)}:` : ''
-          }
+          {hours !== 0 ? `${formatTime(hours)}:` : ""}
+          {minutes !== 0 ? `${formatTime(minutes)}:` : ""}
           {formatTime(seconds)}
         </span>
       );
@@ -184,8 +180,15 @@ const Attempt = () => {
       ) : (
         <div className="w-full">
           <div className="flex items-center justify-between">
-            <h1 className="mb-2 font-bol">{attempt.test.name}</h1>
-            <Countdown date={Date.now() + new Date(attempt.end_date).getTime() - new Date().getTime()} renderer={countdownRenderer} />
+            <h1 className="font-bol mb-2">{attempt.test.name}</h1>
+            <Countdown
+              date={
+                Date.now() +
+                new Date(attempt.end_date).getTime() -
+                new Date().getTime()
+              }
+              renderer={countdownRenderer}
+            />
           </div>
           {!isLoadingAllQuestions && (
             <div className="mb-3 grid w-full grid-cols-[auto_min-content_max-content] gap-2 rounded border border-gray-500 p-2 dark:border-gray-400">
@@ -217,43 +220,46 @@ const Attempt = () => {
               </div>
             ) : (
               <>
-                <div
-                  className="mb-3 w-full break-words"
-                  dangerouslySetInnerHTML={{
-                    __html: question.question_html,
-                  }}
-                />
-                <fieldset className="flex flex-col gap-2">
+                <fieldset className="grid grid-cols-[max-content_auto] gap-2">
+                  <div />
+                  <div
+                    className="w-full break-words"
+                    dangerouslySetInnerHTML={{
+                      __html: question.question_html,
+                    }}
+                  />
                   {answers.map((answer, index) => (
-                    <div
-                      key={answer.id}
-                      className="flex w-full items-center gap-2"
-                    >
-                      {question.question_type === "SINGLE_CHOICE" ? (
-                        <Radio
-                          name="answer"
-                          value={answer.id}
-                          checked={answer.is_selected}
-                          onChange={() => onChangeAnswer(index)}
-                          id={answer.id}
+                    <React.Fragment key={answer.id}>
+                      <div>
+                        {question.question_type === "SINGLE_CHOICE" ? (
+                          <Radio
+                            name="answer"
+                            value={answer.id}
+                            checked={answer.is_selected}
+                            onChange={() => onChangeAnswer(index)}
+                            id={answer.id}
+                          />
+                        ) : (
+                          <Checkbox
+                            name="answer"
+                            value={answer.id}
+                            checked={answer.is_selected}
+                            onChange={() => onChangeAnswer(index)}
+                            id={answer.id}
+                          />
+                        )}
+                      </div>
+
+                      <div className="min-w-full">
+                        <label
+                          htmlFor={answer.id}
+                          className="break-words"
+                          dangerouslySetInnerHTML={{
+                            __html: answer.answer_html,
+                          }}
                         />
-                      ) : (
-                        <Checkbox
-                          name="answer"
-                          value={answer.id}
-                          checked={answer.is_selected}
-                          onChange={() => onChangeAnswer(index)}
-                          id={answer.id}
-                        />
-                      )}
-                      <label
-                        htmlFor={answer.id}
-                        className="break-words"
-                        dangerouslySetInnerHTML={{
-                          __html: answer.answer_html,
-                        }}
-                      ></label>
-                    </div>
+                      </div>
+                    </React.Fragment>
                   ))}
                 </fieldset>
                 <div className="mt-3 flex w-full justify-between">

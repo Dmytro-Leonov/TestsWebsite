@@ -24,7 +24,8 @@ from tests_website.tests.selectors import (
     attempt_question_list,
     attempt_question_get,
     attempt_test_details,
-    get_user_attempts
+    get_user_attempts,
+    test_stats,
 )
 
 
@@ -357,3 +358,48 @@ class AttemptFinish(ApiAuthMixin, APIView):
     def post(self, request, attempt_id):
         attempt_finish(user=self.request.user, attempt_id=attempt_id)
         return Response(status=status.HTTP_200_OK)
+
+
+class TestStatsApi(ApiAuthMixin, APIView):
+    class OutputSerializer(serializers.Serializer):
+        test = inline_serializer(many=False, fields={
+            "id": serializers.IntegerField(),
+            "name": serializers.CharField(),
+            "score": serializers.FloatField(),
+            "time_limit": serializers.DurationField(),
+            "total_questions_answered": serializers.IntegerField(),
+            "correctly_answered_questions": serializers.IntegerField(),
+            "incorrectly_answered_questions": serializers.IntegerField(),
+            "not_answered_questions": serializers.IntegerField(),
+        })
+        attempts = inline_serializer(many=False, fields={
+            "max_score": serializers.FloatField(),
+            "min_score": serializers.FloatField(),
+            "avg_score": serializers.FloatField(),
+            "max_time_taken": serializers.DurationField(),
+            "min_time_taken": serializers.DurationField(),
+            "avg_time_taken": serializers.DurationField(),
+        })
+        questions = inline_serializer(many=True, fields={
+            "id": serializers.IntegerField(),
+            "question": serializers.CharField(),
+            "type": serializers.CharField(),
+            "correctly_answered": serializers.IntegerField(),
+            "incorrectly_answered": serializers.IntegerField(),
+            "not_answered": serializers.IntegerField(),
+            "answers": inline_serializer(many=True, fields={
+                "id": serializers.IntegerField(),
+                "answer": serializers.CharField(),
+                "chosen": serializers.IntegerField(),
+                "is_correct": serializers.BooleanField(),
+            })
+        })
+
+    def get(self, request, test_id):
+        test, attempts, questions = test_stats(user=self.request.user, test_id=test_id)
+        serializer = self.OutputSerializer({
+            "test": test,
+            "attempts": attempts,
+            "questions": questions,
+        })
+        return Response(serializer.data)

@@ -14,7 +14,8 @@ from tests_website.tests.apis import (
     AttemptAnswerSelect,
     AttemptQuestionMarkAsAnswered,
     AttemptTestDetails,
-    AttemptFinish
+    AttemptFinish,
+    TestStatsApi,
 )
 
 urlpatterns = [
@@ -32,4 +33,5 @@ urlpatterns = [
     path("attempt/mark-as-answered/<int:attempt_question_id>/", AttemptQuestionMarkAsAnswered.as_view(), name="attempt-question-mark-as-answered"),
     path("attempt/<int:attempt_id>/details/", AttemptTestDetails.as_view(), name="attempt-test-details"),
     path("attempt/<int:attempt_id>/finish/", AttemptFinish.as_view(), name="attempt-finish"),
+    path("<int:test_id>/stats/", TestStatsApi.as_view(), name="test-stats"),
 ]

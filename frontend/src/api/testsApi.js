@@ -73,7 +73,12 @@ const useTestsApi = () => {
       const url = `attempt/${attemptId}/finish/`;
       const response = await axios.post(url);
       return response.data;
-    }
+    },
+    stats: async (id) => {
+      const url = `${id}/stats/`;
+      const response = await axios.get(url);
+      return response.data;
+    },
   };
 
   return testsApi;
