@@ -26,7 +26,7 @@ class Test(BaseModel):
     end_date = models.DateTimeField(blank=False, null=False)
 
     attempts = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
-    score = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
+    score = models.FloatField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
 
     shuffle_questions = models.BooleanField()
     shuffle_answers = models.BooleanField()
@@ -58,42 +58,6 @@ class Test(BaseModel):
 
     def __str__(self):
         return self.name
-
-
-class GroupTest(BaseModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    group = models.ForeignKey("groups.Group", on_delete=models.CASCADE)
-    test = models.ForeignKey("Test", on_delete=models.CASCADE)
-
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-
-    is_visible = models.BooleanField()
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                "group", "test",
-                name="unique_group_test",
-                violation_error_message="This test is already added to this group"
-            )
-        ]
-
-    def clean(self):
-        if self.start_date > self.end_date:
-            raise ValidationError({"end_date": "End date cannot be before start date"})
-
-    @property
-    def has_started(self):
-        return self.start_date <= get_now()
-
-    @property
-    def has_ended(self):
-        return self.end_date <= get_now()
-
-    def __str__(self):
-        return f"{self.group} - {self.test}"
 
 
 class TestQuestion(BaseModel):
@@ -136,7 +100,7 @@ class AttemptQuestion(BaseModel):
     attempt = models.ForeignKey("Attempt", on_delete=models.CASCADE)
     question = models.ForeignKey("questions.Question", on_delete=models.CASCADE)
     order = models.IntegerField(db_index=True)
-    points = models.PositiveIntegerField(default=0)
+    points = models.FloatField(default=0)
     has_answer = models.BooleanField(default=False)
     marked_as_answered = models.BooleanField(default=False)
 
@@ -150,9 +114,8 @@ class AttemptAnswer(BaseModel):
 
 
 class Log(BaseModel):
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
     attempt = models.ForeignKey("Attempt", on_delete=models.CASCADE)
-    question = models.ForeignKey("questions.Question", on_delete=models.CASCADE)
+    question = models.ForeignKey("questions.Question", on_delete=models.CASCADE, null=True, blank=True)
     answer = models.ForeignKey("questions.Answer", on_delete=models.CASCADE, null=True, blank=True)
 
     class LogAction(models.TextChoices):
@@ -160,8 +123,9 @@ class Log(BaseModel):
         SELECTED_ANSWER = "SELECTED_ANSWER", "Selected answer"
         DESELECTED_ANSWER = "DESELECTED_ANSWER", "Deselected answer"
         MARKED_AS_ANSWERED = "MARKED_AS_ANSWERED", "Marked as answered"
+        UNMARKED_AS_ANSWERED = "UNMARKED_AS_ANSWERED", "Unmarked as answered"
 
     action = models.CharField(max_length=20, choices=LogAction.choices)
 
     def __str__(self):
-        return f"{self.user} - {self.action}"
+        return f"{self.created_at} - {self.action}"

@@ -11,14 +11,20 @@ from tests_website.tests.services import (
     test_create,
     test_delete,
     test_update,
-    test_start
+    test_start,
+    attempt_answer_select,
+    record_answer_select,
+    attempt_question_mark_as_answered,
+    attempt_finish,
 )
 from tests_website.tests.selectors import (
     test_list_created_by_user,
     test_list_to_complete,
     test_get_preview,
     attempt_question_list,
-    attempt_question_get
+    attempt_question_get,
+    attempt_test_details,
+    get_user_attempts
 )
 
 
@@ -127,6 +133,7 @@ class TestListCreatedByUserApi(ApiAuthMixin, APIView):
             fields = (
                 "id",
                 "name",
+                "description",
                 "created_at",
             )
 
@@ -219,32 +226,40 @@ class TestStartApi(ApiAuthMixin, APIView):
 
 
 class TestGetPreviewApi(ApiAuthMixin, APIView):
-    class OutputSerializer(serializers.ModelSerializer):
-        used_attempts = serializers.IntegerField()
-        in_progress = serializers.BooleanField()
-        last_attempt_id = serializers.IntegerField()
-
-        class Meta:
-            model = Test
-            fields = (
-                "id",
-                "name",
-                "description",
-                "time_limit",
-                "start_date",
-                "end_date",
-                "attempts",
-                "score",
-                "used_attempts",
-                "in_progress",
-                "last_attempt_id",
-            )
+    class OutputSerializer(serializers.Serializer):
+        test = inline_serializer(many=False, fields={
+            "id": serializers.IntegerField(),
+            "name": serializers.CharField(),
+            "description": serializers.CharField(),
+            "time_limit": serializers.DurationField(),
+            "start_date": serializers.DateTimeField(),
+            "end_date": serializers.DateTimeField(),
+            "attempts": serializers.IntegerField(),
+            "score": serializers.FloatField(),
+            "used_attempts": serializers.IntegerField(),
+            "in_progress": serializers.BooleanField(),
+            "last_attempt_id": serializers.IntegerField(),
+            "show_score_after_test": serializers.BooleanField(),
+        })
+        user_attempts = inline_serializer(many=True, fields={
+            "id": serializers.IntegerField(),
+            "score": serializers.FloatField(),
+            "start_date": serializers.DateTimeField(),
+            "end_date": serializers.DateTimeField(),
+        })
 
     def get(self, request, test_id):
         test = test_get_preview(user=self.request.user, test_id=test_id)
         if test is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(self.OutputSerializer(test).data)
+
+        user_attempts = get_user_attempts(user=self.request.user, test_id=test_id)
+        serializer = self.OutputSerializer({
+            "test": test,
+            "user_attempts": user_attempts,
+        }).data
+
+        return Response(serializer)
 
 
 class TestAttemptAllQuestionsList(ApiAuthMixin, APIView):
@@ -263,52 +278,6 @@ class TestAttemptAllQuestionsList(ApiAuthMixin, APIView):
         attempt_questions = attempt_question_list(user=self.request.user, attempt=attempt)
 
         return Response(self.OutputSerializer(attempt_questions, many=True).data)
-
-
-class TestAttemptGetQuestionWithAllQuestions(ApiAuthMixin, APIView):
-    class OutputSerializer(serializers.Serializer):
-        test = inline_serializer(many=False, fields={
-            "id": serializers.IntegerField(),
-            "name": serializers.CharField(),
-            "start_date": serializers.DateTimeField(),
-            "end_date": serializers.DateTimeField(),
-            "time_limit": serializers.IntegerField(),
-        }, required=False)
-        questions = inline_serializer(many=True, fields={
-            "id": serializers.IntegerField(),
-            "has_answer": serializers.BooleanField(),
-            "marked_as_answered": serializers.BooleanField(),
-            "order": serializers.IntegerField(),
-        })
-        current_question = inline_serializer(many=False, fields={
-            "id": serializers.IntegerField(),
-            "question": serializers.CharField(),
-            "has_answer": serializers.BooleanField(),
-            "marked_as_answered": serializers.BooleanField(),
-            "answers": inline_serializer(many=True, fields={
-                "id": serializers.IntegerField(),
-                "answer": serializers.CharField(),
-                "order": serializers.IntegerField(),
-                "is_selected": serializers.BooleanField(),
-            }),
-        }, required=False)
-
-    def get(self, request, test_id, attempt_id, question_number):
-        user = self.request.user
-        print(test_id, attempt_id, question_number)
-
-        # test = get_object_or_404(Test, id=test_id)
-        # question = get_object_or_404(Question, id=question_id, tests=test)
-        attempt = get_object_or_404(Attempt, id=attempt_id, user=user)
-
-        questions = attempt_question_list(user=user, attempt=attempt)
-        # current_question = attempt_question_get(user=user, attempt_id=attempt_id, question_number=question_number)
-
-        return Response(self.OutputSerializer({
-            # "test": test,
-            "questions": questions,
-            # "current_question": current_question,
-        }).data)
 
 
 class TestAttemptGetQuestion(ApiAuthMixin, APIView):
@@ -337,3 +306,54 @@ class TestAttemptGetQuestion(ApiAuthMixin, APIView):
         return Response(res)
 
 
+class AttemptAnswerSelect(ApiAuthMixin, APIView):
+    class InputSerializer(serializers.Serializer):
+        selected = serializers.BooleanField()
+
+    def post(self, request, attempt_answer_id):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        attempt_id, answer_id = attempt_answer_select(user=self.request.user, attempt_answer_id=attempt_answer_id, **serializer.validated_data)
+        record_answer_select(attempt_id=attempt_id, answer_id=answer_id, **serializer.validated_data)
+        return Response(status=status.HTTP_200_OK)
+
+
+class AttemptQuestionMarkAsAnswered(ApiAuthMixin, APIView):
+    class InputSerializer(serializers.Serializer):
+        answered = serializers.BooleanField()
+
+    def post(self, request, attempt_question_id):
+        serializer = self.InputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        attempt_question_mark_as_answered(attempt_question_id=attempt_question_id, **serializer.validated_data)
+        attempt_question_mark_as_answered(attempt_question_id=attempt_question_id, **serializer.validated_data)
+        return Response(status=status.HTTP_200_OK)
+
+
+class AttemptTestDetails(ApiAuthMixin, APIView):
+    class OutputSerializer(serializers.ModelSerializer):
+        test = inline_serializer(fields={
+            "id": serializers.IntegerField(),
+            "name": serializers.CharField(),
+        })
+
+        class Meta:
+            model = Attempt
+            fields = (
+                "id",
+                "test",
+                "user",
+                "start_date",
+                "end_date",
+            )
+
+    def get(self, request, attempt_id):
+        attempt = attempt_test_details(user=self.request.user, attempt_id=attempt_id)
+        serializer = self.OutputSerializer(attempt)
+        return Response(serializer.data)
+
+
+class AttemptFinish(ApiAuthMixin, APIView):
+    def post(self, request, attempt_id):
+        attempt_finish(user=self.request.user, attempt_id=attempt_id)
+        return Response(status=status.HTTP_200_OK)

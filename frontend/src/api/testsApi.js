@@ -53,6 +53,26 @@ const useTestsApi = () => {
       const url = `attempt/${attemptId}/question/${questionId}/`;
       const response = await axios.get(url);
       return response.data;
+    },
+    selectAnswer: async (attemptAnswerId, data) => {
+      const url = `attempt/select-answer/${attemptAnswerId}/`;
+      const response = await axios.post(url, data);
+      return response.data;
+    },
+    markQuestionAsAnswered: async (attemptQuestionId, data) => {
+      const url = `attempt/mark-as-answered/${attemptQuestionId}/`;
+      const response = await axios.post(url, data);
+      return response.data;
+    },
+    attemptDetails: async (attemptId) => {
+      const url = `attempt/${attemptId}/details/`;
+      const response = await axios.get(url);
+      return response.data;
+    },
+    finishAttempt: async (attemptId) => {
+      const url = `attempt/${attemptId}/finish/`;
+      const response = await axios.post(url);
+      return response.data;
     }
   };
 

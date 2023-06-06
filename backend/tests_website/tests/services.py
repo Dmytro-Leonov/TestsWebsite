@@ -3,11 +3,13 @@ import random
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Q, F
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import PermissionDenied
 
 from tests_website.common.services import model_update
 from tests_website.common.utils import get_now
-from tests_website.tests.models import Test, TestQuestion, Attempt, AttemptAnswer, AttemptQuestion
+from tests_website.tests.models import Test, Log, TestQuestion, Attempt, AttemptAnswer, AttemptQuestion
 from tests_website.questions.models import QuestionPool, Question
 from tests_website.users.models import User
 from tests_website.groups.models import Group
@@ -34,6 +36,11 @@ def test_create(
 ):
     if question_pool.questions.count() == 0:
         raise ValidationError({"question_pool": "Question pool must contain at least one question"})
+
+    subscription = user.subscription
+    # check if user had already created a max number of tests
+    if Test.objects.filter(user=user).count() >= subscription.max_tests:
+        raise ValidationError("You have reached the maximum number of tests you can create")
 
     test = Test(
         user=user,
@@ -83,7 +90,6 @@ def test_create(
 
 @transaction.atomic
 def test_delete(*, test: Test):
-    print(test)
     Question.objects.filter(testquestion__test_id=test.id).delete()
     test.delete()
 
@@ -97,7 +103,7 @@ def test_update(*, test: Test, data):
     # start_date, end_date, attempts, score, time_limit, give_extra_time, shuffle_questions, shuffle_answers
     if test.start_date < get_now():
         fields = [field for field in fields if field not in
-                  ["start_date", "end_date", "attempts", "score", "time_limit", "give_extra_time",
+                  ["start_date", "end_date", "attempts", "time_limit", "give_extra_time",
                    "shuffle_questions", "shuffle_answers"]]
 
     test, _ = model_update(instance=test, fields=fields, data=data)
@@ -160,3 +166,106 @@ def test_start(*, user: Test, test: Test):
             AttemptAnswer.objects.create(attempt_question=attempt_question, answer=answer, order=order + 1)
 
     return attempt.id
+
+
+def attempt_answer_select(*, user: User, attempt_answer_id: int, selected: bool):
+    attempt_answer = get_object_or_404(AttemptAnswer, id=attempt_answer_id)
+
+    # check if attempt is not finished
+    if attempt_answer.attempt_question.attempt.end_date < get_now():
+        raise ValidationError("Attempt is finished")
+
+    # check if user is the owner of the attempt
+    if attempt_answer.attempt_question.attempt.user_id != user.id:
+        raise ValidationError("Error")
+
+    question = attempt_answer.attempt_question.question
+
+    # check question type
+    if question.type == Question.QuestionType.SINGLE_CHOICE:
+        # unselect all other answers
+        AttemptAnswer.objects.filter(
+            attempt_question=attempt_answer.attempt_question
+        ).update(is_selected=False)
+
+        attempt_answer.is_selected = True
+        attempt_answer.attempt_question.has_answer = True
+
+        if attempt_answer.answer.is_correct:
+            attempt_answer.is_correct = True
+            attempt_answer.attempt_question.points = 1
+        else:
+            attempt_answer.is_correct = False
+            attempt_answer.attempt_question.points = 0
+
+        attempt_answer.attempt_question.save()
+        attempt_answer.save()
+    elif question.type == Question.QuestionType.MULTIPLE_CHOICE:
+        attempt_answer.is_selected = selected
+        attempt_answer.save()
+
+        # check if all other answers are selected correctly
+        all_are_correct = not AttemptAnswer.objects.filter(
+            Q(attempt_question=attempt_answer.attempt_question),
+            ~Q(is_selected=F("answer__is_correct"))
+        ).exists()
+
+        if all_are_correct:
+            attempt_answer.attempt_question.points = 1
+        else:
+            attempt_answer.attempt_question.points = 0
+
+        attempt_answer.attempt_question.has_answer = AttemptAnswer.objects.filter(
+            attempt_question=attempt_answer.attempt_question,
+            is_selected=True
+        ).exists()
+
+        attempt_answer.attempt_question.save()
+
+    return attempt_answer.attempt_question.attempt_id, attempt_answer.answer_id
+
+
+def record_answer_select(*, attempt_id: int, answer_id: int, selected: bool):
+    action = Log.LogAction.SELECTED_ANSWER if selected else Log.LogAction.DESELECTED_ANSWER
+
+    Log.objects.create(
+        attempt_id=attempt_id,
+        answer_id=answer_id,
+        action=action
+    )
+
+
+def attempt_question_mark_as_answered(*, attempt_question_id: int, answered: bool):
+    attempt_question = get_object_or_404(AttemptQuestion, id=attempt_question_id)
+
+    # check if attempt is not finished
+    if attempt_question.attempt.end_date < get_now():
+        raise ValidationError("Attempt is finished")
+
+    attempt_question.marked_as_answered = answered
+    attempt_question.save()
+
+
+def record_question_mark_as_answered(*, attempt_question_id: int, answered: bool):
+    attempt_question = get_object_or_404(AttemptQuestion, id=attempt_question_id)
+    Log.objects.create(
+        attempt_id=attempt_question.attempt_id,
+        question_id=attempt_question.question_id,
+        action=Log.LogAction.MARKED_AS_ANSWERED if answered else Log.LogAction.UNMARKED_AS_ANSWERED
+    )
+
+
+def attempt_finish(user: User, attempt_id: int):
+    attempt = get_object_or_404(Attempt, id=attempt_id)
+
+    # check if attempt is not finished
+    if attempt.end_date < get_now():
+        raise ValidationError("Attempt is finished")
+
+    # check if user is the owner of the attempt
+    if attempt.user_id != user.id:
+        raise PermissionDenied()
+
+    attempt.end_date = get_now()
+    attempt.save()
+

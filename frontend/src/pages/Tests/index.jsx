@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import useTestsApi from "../../api/testsApi";
-
+import { default as cn } from "classnames";
+import { MdEdit } from "react-icons/md";
 import parseError from "../../utils/parseError";
 import trim from "../../utils/trim";
 import {
@@ -14,6 +15,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { Spinner, Tabs, Button, Modal } from "flowbite-react";
+import Divider from "../../components/ui/Divider";
 
 const Groups = () => {
   const testsApi = useTestsApi();
@@ -90,7 +92,7 @@ const Groups = () => {
   };
 
   const continueTest = async (id) => {
-    navigate(`/tests/${id}/attempt/${test.last_attempt_id}/question/1`);
+    navigate(`/tests/${id}/attempt/${test.test.last_attempt_id}/question/1`);
   };
 
   return (
@@ -120,12 +122,29 @@ const Groups = () => {
                 {userTests.map((test) => (
                   <div
                     key={test.id}
-                    className="rounded-md border border-gray-500 p-2 transition-colors hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white"
+                    className="relative rounded-md border border-gray-500 p-2 transition-colors dark:border-gray-400"
                   >
                     <Link to={`/tests/${test.id}`}>
-                      <span>{trim(test.name)}</span>
-                      <p>Craeted: {formatDateTime(test.created_at)}</p>
+                      {/* <button className="absolute right-1 top-1 cursor-pointer rounded-full border border-gray-500 p-1 transition-colors hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white"> */}
+                      <button className="absolute right-1 top-1 rounded-full border text-blue-700 hover:text-blue-800 dark:text-blue-600 dark:hover:text-blue-700 border-blue-700 hover:border-blue-800 p-1 transition-colors">
+                        <MdEdit />
+                      </button>
                     </Link>
+                    <h3>{trim(test.name, 22)}</h3>
+                    {
+                      test.description && (
+                        <p className="text-sm">{trim(test.description, 32)}</p>
+                      )
+                    }
+                    <p>Created: {formatDateTime(test.created_at)}</p>
+                    <div className="mt-2 flex gap-2">
+                      <Link to={`/tests/${test.id}/users-stats`}>
+                        <Button size="xs">Users stats</Button>
+                      </Link>
+                      <Link to={`/tests/${test.id}/questions-stats`}>
+                        <Button size="xs">Questions Stats</Button>
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -156,7 +175,7 @@ const Groups = () => {
                     <p className="text-lg font-semibold">{trim(test.name)}</p>
                     {test.description && <p>{trim(test.description, 40)}</p>}
                     <p>Time limit: {test.time_limit}</p>
-                    <p>Score: {test.score}</p>
+                    <p>Max Score: {test.score}</p>
                     <p>Start date: {formatDateTimeWithTime(test.start_date)}</p>
                     <p>End date: {formatDateTimeWithTime(test.end_date)}</p>
                     <p>
@@ -172,7 +191,7 @@ const Groups = () => {
 
       {/* modal to start or continue attempt */}
       <Modal show={showModal} dismissible onClose={() => setShowModal(false)}>
-        <Modal.Header>{!testIsLoading && <>{test.name}</>}</Modal.Header>
+        <Modal.Header>{!testIsLoading && <>{test.test.name}</>}</Modal.Header>
         <Modal.Body>
           <div>
             {testIsLoading ? (
@@ -181,30 +200,64 @@ const Groups = () => {
               </div>
             ) : (
               <div>
-                <p className="mb-2">{test.description}</p>
-                <div className="grid grid-cols-[max-content_auto] gap-x-2">
-                  <span className="font-semibold">Time limit:</span>
-                  <span>{test.time_limit}</span>
-                  <span className="font-semibold">Score:</span>
-                  <span>{test.score}</span>
-                  <span className="font-semibold">Start date:</span>
-                  <span>{formatDateTimeWithTime(test.start_date)}</span>
-                  <span className="font-semibold">End date:</span>
-                  <span>{formatDateTimeWithTime(test.end_date)}</span>
-                  <span className="font-semibold">Attempts used:</span>
-                  <span>
-                    {test.used_attempts}/{test.attempts}
-                  </span>
-                  <p className="text-4xl font-bold">
-                    get previous attempts!!!!!!!!!!!
+                {test.test.description && (
+                  <p className="mb-2 text-xl font-semibold">
+                    {test.test.description}
                   </p>
+                )}
+                <div className="grid grid-cols-[max-content_auto] gap-x-3">
+                  <span className="font-semibold">Time limit:</span>
+                  <span>{test.test.time_limit}</span>
+                  <span className="font-semibold">Max Score:</span>
+                  <span>{test.test.score}</span>
+                  <span className="font-semibold">Start date:</span>
+                  <span>{formatDateTimeWithTime(test.test.start_date)}</span>
+                  <span className="font-semibold">End date:</span>
+                  <span>{formatDateTimeWithTime(test.test.end_date)}</span>
                 </div>
-                {(test.used_attempts < test.attempts || test.in_progress) && (
+                <Divider />
+                <div>
+                  <span className="font-semibold">Attempts used: </span>
+                  <span>
+                    {test.test.used_attempts}/{test.test.attempts}
+                  </span>
+                  <div
+                    className={cn("grid items-baseline gap-2", {
+                      "grid-cols-[max-content_max-content_max-content_max-content_auto]":
+                        test.test.show_score_after_test,
+                      "grid-cols-[max-content_max-content_auto]":
+                        !test.test.show_score_after_test,
+                    })}
+                  >
+                    {test.user_attempts.map((attempt, index) => (
+                      <React.Fragment key={index}>
+                        <span className="font-semibold">
+                          Attempt {index + 1}
+                        </span>
+                        {test.test.show_score_after_test && (
+                          <>
+                            <span>|</span>
+                            <span>{attempt.score}</span>
+                          </>
+                        )}
+                        <span>|</span>
+                        <span>
+                          {formatDateTimeWithTime(attempt.start_date)} -{" "}
+                          {formatDateTimeWithTime(attempt.end_date)}
+                        </span>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+                {(test.test.used_attempts < test.test.attempts ||
+                  test.test.in_progress) && (
                   <div className="mt-4">
-                    {test.in_progress ? (
-                      <Button onClick={() => continueTest(test.id)}>Continue test</Button>
+                    {test.test.in_progress ? (
+                      <Button onClick={() => continueTest(test.test.id)}>
+                        Continue test
+                      </Button>
                     ) : (
-                      <Button onClick={() => startTest(test.id)}>
+                      <Button onClick={() => startTest(test.test.id)}>
                         Start test
                       </Button>
                     )}

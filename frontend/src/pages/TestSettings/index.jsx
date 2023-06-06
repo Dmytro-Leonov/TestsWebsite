@@ -11,8 +11,6 @@ import DisplayFieldErrors from "../../components/forms/DisplayFieldErrors";
 import useTestsApi from "../../api/testsApi";
 
 import parseError from "../../utils/parseError";
-import { DateField } from "../../components/forms/DateField";
-import { now, getLocalTimeZone } from "@internationalized/date";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../../components/ui/ConfirmationModal";
 
@@ -212,7 +210,7 @@ const TestSettings = () => {
         {questionPool && (
           <div className="w-full">
             <p className=" text-lg">Question Pool</p>
-            <p className="text-md mt-2 rounded-lg border-l p-3">
+            <p className="text-md mt-2 cursor-not-allowed select-none rounded-lg border border-gray-300  bg-gray-50 p-3 opacity-50 dark:border-gray-600 dark:bg-gray-700">
               {questionPool.name}
             </p>
           </div>
@@ -222,7 +220,7 @@ const TestSettings = () => {
           group && (
             <div className="w-full">
               <p className=" text-lg">Group</p>
-              <p className="text-md mt-2 rounded-lg border-l p-3">
+              <p className="text-md mt-2 cursor-not-allowed select-none rounded-lg border border-gray-300  bg-gray-50 p-3 opacity-50 dark:border-gray-600 dark:bg-gray-700">
                 {group.name}
               </p>
             </div>
@@ -295,7 +293,7 @@ const TestSettings = () => {
         <div className="w-full">
           <p className=" text-lg">Start date</p>
           {startDate && (
-            <p className="text-md mt-2 rounded-lg border-l p-3">
+            <p className="text-md mt-2 cursor-not-allowed select-none rounded-lg border border-gray-300  bg-gray-50 p-3 opacity-50 dark:border-gray-600 dark:bg-gray-700">
               {startDate.replace("T", " ").slice(0, -3)}
             </p>
           )}
@@ -303,7 +301,7 @@ const TestSettings = () => {
         <div className="w-full">
           <p className=" text-lg">End date</p>
           {endDate && (
-            <p className="text-md mt-2 rounded-lg border-l p-3">
+            <p className="text-md mt-2 cursor-not-allowed select-none rounded-lg border border-gray-300  bg-gray-50 p-3 opacity-50 dark:border-gray-600 dark:bg-gray-700">
               {endDate.replace("T", " ").slice(0, -3)}
             </p>
           )}
@@ -333,7 +331,6 @@ const TestSettings = () => {
           <p className=" text-lg">Score</p>
           <DisplayFieldErrors errors={scoreErrors} />
           <TextInput
-            disabled={!canChangeSensitive}
             type="number"
             max={1000}
             value={score}
@@ -371,7 +368,6 @@ const TestSettings = () => {
         <div className="w-full">
           <p className=" text-lg">Show score after test</p>
           <Select
-            disabled={!canChangeSensitive}
             value={showScoreAfterTest}
             onChange={(e) => setShowScoreAfterTest(e.target.value)}
           >

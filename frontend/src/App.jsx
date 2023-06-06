@@ -23,6 +23,7 @@ import QuestionPool from "./pages/QuestionPool";
 import CreateQuestion from "./pages/CreateQuestoin";
 import EditQuestion from "./pages/EditQuestion";
 import Attempt from "./pages/Attempt";
+import QuestionsStats from "./pages/QuestionsStats";
 
 import settings from "./data/toastContainerSettings";
 
@@ -88,7 +89,8 @@ const App = () => {
               <Route exact path="/question-pools/:id" element={<QuestionPool />} />
               <Route exact path="/question-pools/:id/add-question" element={<CreateQuestion />} />
               <Route exact path="/question-pools/:id/edit-question/:questionId" element={<EditQuestion />} />
-              <Route exact path="tests/:testId/attempt/:attemptId/question/:questionNumber" element={<Attempt />} />
+              <Route exact path="/tests/:testId/attempt/:attemptId/question/:questionNumber" element={<Attempt />} />
+              <Route exact path="/tests/:testId/questions-stats" element={<QuestionsStats />} />
             </Routes>
           </main>
           <Footer />
