@@ -149,7 +149,7 @@ const TestStats = () => {
                   />
                   <h2 className="font-bold">Mark</h2>
                   <div className="grid grid-cols-[max-content_max-content_max-content_max-content] gap-x-5 text-lg">
-                    <span>Max Possible</span>
+                    <span>Max possible</span>
                     <span>Min</span>
                     <span>Max</span>
                     <span>Avg</span>
@@ -188,9 +188,9 @@ const TestStats = () => {
                     showPercentages={timeTakenShowPercentages}
                     setShowPercentages={setTimeTakenShowPercentages}
                   />
-                  <h2 className="font-bold">Time Taken</h2>
+                  <h2 className="font-bold">Time taken</h2>
                   <div className="grid grid-cols-[max-content_max-content_max-content_max-content] gap-x-5 text-lg">
-                    <span>Max Possible</span>
+                    <span>Max possible</span>
                     <span>Min</span>
                     <span>Max</span>
                     <span>Avg</span>
@@ -227,10 +227,10 @@ const TestStats = () => {
                   </div>
                 </div>
               </div>
-              <Divider />
               <div>
+                <Divider />
                 <h3 className="mb-2 font-bold">Test Questions</h3>
-                <div className="mb-2 flex flex-col gap-2">
+                <div className="mb-2 flex flex-row flex-wrap gap-4">
                   <div className="flex gap-2">
                     <div className="h-5 w-5 rounded-full bg-emerald-500" />
                     <span>Correctly answered</span>
@@ -250,14 +250,16 @@ const TestStats = () => {
                       question.correctly_answered +
                       question.incorrectly_answered +
                       question.not_answered;
+                    const answersSum = question.answers.reduce(
+                      (acc, answer) => acc + answer.chosen,
+                      0
+                    );
                     return (
                       <div
                         key={question.id}
                         className="flex flex-col gap-1 rounded border border-gray-500 p-2 dark:border-gray-400"
                       >
-                        <div
-                          className="grid grid-cols-[max-content_auto] gap-3"
-                        >
+                        <div className="grid grid-cols-[max-content_auto] gap-2">
                           <div></div>
                           <div className="min-w-full">
                             <div
@@ -267,7 +269,7 @@ const TestStats = () => {
                               }}
                             ></div>
                           </div>
-                          {question.answers.map((answer) => (
+                          {question.answers.map((answer, index) => (
                             <React.Fragment key={answer.id}>
                               <div>
                                 {question.type === "SINGLE_CHOICE" ? (
@@ -279,15 +281,24 @@ const TestStats = () => {
                                   />
                                 )}
                               </div>
-                              <div className="min-w-full flex flex-col gap-2">
+                              <div className="flex min-w-full flex-col gap-2">
                                 <div
                                   className="break-words"
                                   dangerouslySetInnerHTML={{
                                     __html: answer.answer,
                                   }}
-                                ></div>
-                                <div>asdf</div>
+                                />
+                                <div>
+                                  <span>Times Selected: </span>
+                                  <span className="font-semibold">
+                                    {answer.chosen} ({getPercentage(answer.chosen, answersSum)})
+                                  </span>
+                                </div>
                               </div>
+                              <div></div>
+                              {question.answers.length - 1 !== index && (
+                                <Divider className="!my-0" />
+                              )}
                             </React.Fragment>
                           ))}
                         </div>
@@ -303,7 +314,7 @@ const TestStats = () => {
                             }}
                           >
                             <Tooltip
-                              content={`${
+                              content={`Correctly answered: ${
                                 question.correctly_answered
                               } (${getPercentage(
                                 question.correctly_answered,
@@ -326,7 +337,7 @@ const TestStats = () => {
                             }}
                           >
                             <Tooltip
-                              content={`${
+                              content={`Incorrectly answered: ${
                                 question.incorrectly_answered
                               } (${getPercentage(
                                 question.incorrectly_answered,
@@ -349,7 +360,7 @@ const TestStats = () => {
                             }}
                           >
                             <Tooltip
-                              content={`${
+                              content={`Not answered: ${
                                 question.not_answered
                               } (${getPercentage(
                                 question.not_answered,
