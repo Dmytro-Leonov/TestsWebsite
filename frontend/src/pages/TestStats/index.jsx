@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useTestsApi from "../../api/testsApi";
+import { formatTime } from "../../utils/formatDateTime";
 
 import { Spinner, Tooltip, Radio, Checkbox } from "flowbite-react";
 import Divider from "../../components/ui/Divider";
@@ -46,21 +47,6 @@ const TestStats = () => {
     return (
       Number(((num / total) * 100).toFixed(round ? 0 : 2)).toString() + "%"
     );
-  };
-
-  const formatTime = (time) => {
-    time = time.split(".")[0];
-    const splitTime = time.split(":").map((n) => Number(n));
-    const hours = splitTime[0];
-    const minutes = splitTime[1];
-    const seconds = splitTime[2];
-
-    let res = "";
-    if (hours) res += `${hours}h`;
-    if (minutes) res += ` ${minutes}m`;
-    if (seconds) res += ` ${seconds}s`;
-
-    return res;
   };
 
   const timeToSeconds = (time) => {
@@ -291,7 +277,8 @@ const TestStats = () => {
                                 <div>
                                   <span>Times Selected: </span>
                                   <span className="font-semibold">
-                                    {answer.chosen} ({getPercentage(answer.chosen, answersSum)})
+                                    {answer.chosen} (
+                                    {getPercentage(answer.chosen, answersSum)})
                                   </span>
                                 </div>
                               </div>

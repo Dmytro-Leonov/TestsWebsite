@@ -16,6 +16,8 @@ from tests_website.tests.apis import (
     AttemptTestDetails,
     AttemptFinish,
     TestStatsApi,
+    TestUserAttemptsApi,
+    AttemptOverviewApi,
 )
 
 urlpatterns = [
@@ -34,4 +36,6 @@ urlpatterns = [
     path("attempt/<int:attempt_id>/details/", AttemptTestDetails.as_view(), name="attempt-test-details"),
     path("attempt/<int:attempt_id>/finish/", AttemptFinish.as_view(), name="attempt-finish"),
     path("<int:test_id>/stats/", TestStatsApi.as_view(), name="test-stats"),
+    path("<int:test_id>/attempts/", TestUserAttemptsApi.as_view(), name="test-attempts"),
+    path("<int:test_id>/attempts/<int:attempt_id>/overview/", AttemptOverviewApi.as_view(), name="attempt-overview"),
 ]

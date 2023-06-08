@@ -125,7 +125,6 @@ const Groups = () => {
                     className="relative rounded-md border border-gray-500 p-2 transition-colors dark:border-gray-400"
                   >
                     <Link to={`/tests/${test.id}`}>
-                      {/* <button className="absolute right-1 top-1 cursor-pointer rounded-full border border-gray-500 p-1 transition-colors hover:border-gray-700 hover:text-gray-700 dark:border-gray-400 dark:hover:border-white dark:hover:text-white"> */}
                       <button className="absolute right-1 top-1 rounded-full border text-blue-700 hover:text-blue-800 dark:text-blue-600 dark:hover:text-blue-700 border-blue-700 hover:border-blue-800 p-1 transition-colors">
                         <MdEdit />
                       </button>
@@ -138,11 +137,11 @@ const Groups = () => {
                     }
                     <p>Created: {formatDateTime(test.created_at)}</p>
                     <div className="mt-2 flex gap-2">
-                      <Link to={`/tests/${test.id}/answers-stats`}>
-                        <Button size="xs">Answers stats</Button>
+                      <Link to={`/tests/${test.id}/attempts`}>
+                        <Button size="xs">View Answers</Button>
                       </Link>
-                      <Link to={`/tests/${test.id}/test-stats`}>
-                        <Button size="xs">Questions Stats</Button>
+                      <Link to={`/tests/${test.id}/stats`}>
+                        <Button size="xs">View Statistics</Button>
                       </Link>
                     </div>
                   </div>

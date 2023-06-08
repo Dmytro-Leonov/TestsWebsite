@@ -12,7 +12,7 @@ from datetime import timedelta
 class Test(BaseModel):
     user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="created_tests")
     question_pool = models.ForeignKey("questions.QuestionPool", on_delete=models.SET_NULL, null=True, blank=True)
-    group = models.ForeignKey("groups.Group", on_delete=models.CASCADE)
+    group = models.ForeignKey("groups.Group", on_delete=models.CASCADE, related_name="tests")
     questions = models.ManyToManyField("questions.Question", through="TestQuestion", related_name="tests")
 
     name = models.CharField(max_length=100, validators=[MinLengthValidator(1)])
@@ -85,7 +85,7 @@ class TestQuestion(BaseModel):
 
 
 class Attempt(BaseModel):
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="attempts_set")
     test = models.ForeignKey("Test", on_delete=models.CASCADE, related_name="attempts_set")
 
     start_date = models.DateTimeField()
@@ -114,7 +114,7 @@ class AttemptAnswer(BaseModel):
 
 class Log(BaseModel):
     attempt = models.ForeignKey("Attempt", on_delete=models.CASCADE)
-    question = models.ForeignKey("questions.Question", on_delete=models.CASCADE, null=True, blank=True)
+    question = models.ForeignKey("AttemptQuestion", on_delete=models.CASCADE, null=True, blank=True)
     answer = models.ForeignKey("questions.Answer", on_delete=models.CASCADE, null=True, blank=True)
 
     class LogAction(models.TextChoices):

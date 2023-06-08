@@ -79,6 +79,16 @@ const useTestsApi = () => {
       const response = await axios.get(url);
       return response.data;
     },
+    attempts: async (id) => {
+      const url = `${id}/attempts/`;
+      const response = await axios.get(url);
+      return response.data;
+    },
+    attemptOverview: async (testId, attemptId) => {
+      const url = `${testId}/attempts/${attemptId}/overview/`;
+      const response = await axios.get(url);
+      return response.data;
+    }
   };
 
   return testsApi;

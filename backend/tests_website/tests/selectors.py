@@ -115,7 +115,7 @@ def attempt_question_get(*, user: User, attempt_id: int, question_number: int):
 
     Log.objects.create(
         attempt=attempt,
-        question=attempt_question.question,
+        question=attempt_question,
         action=Log.LogAction.ENTERED_QUESTION,
     )
 
@@ -269,46 +269,84 @@ def test_stats(*, user: User, test_id: int):
             )
         )
     )
-    # print(questions)
-    # print(questions[0].answers.all(), questions[1].answers.all())
-    # print(questions[0].answers.all()[0].chosen, questions[0].answers.all()[1].chosen, questions[0].answers.all()[2].chosen)
-    # print(questions[1].answers.all()[0].chosen, questions[1].answers.all()[1].chosen)
-
-    # print(questions[0])
-
-    # example = [
-    #     {
-    #         "question": "adsf",
-    #         "correctly_answered": 10,
-    #         "incorrectly_answered": 20,
-    #         "not_answered": 30,
-    #         "answers": [
-    #             {
-    #                 "answer": "asdf",
-    #                 "chosen": 10,
-    #             },
-    #             {
-    #                 "answer": "asdf",
-    #                 "chosen": 5,
-    #             },
-    #         ]
-    #     },
-    #     {
-    #         "question": "adsf",
-    #         "correctly_answered": 10,
-    #         "incorrectly_answered": 20,
-    #         "not_answered": 30,
-    #         "answers": [
-    #             {
-    #                 "answer": "asdf",
-    #                 "chosen": 10,
-    #             },
-    #             {
-    #                 "answer": "asdf",
-    #                 "chosen": 5,
-    #             },
-    #         ]
-    #     }
-    # ]
 
     return test, attempts, questions
+
+
+def test_user_answers_get(*, user: User, test: Test):
+    user_answers_qs = (
+        User
+        .objects
+        .filter(
+            member_of_groups__tests=test,
+            member_of_groups__tests__user=user,
+        )
+        .annotate(
+            has_ongoing_attempt=Exists(
+                Attempt
+                .objects
+                .filter(
+                    user=OuterRef("id"),
+                    test=test,
+                    end_date__gt=get_now(),
+                )
+            )
+        )
+        .prefetch_related(
+            Prefetch(
+                "attempts_set",
+                queryset=(
+                    Attempt
+                    .objects
+                    .filter(
+                        test=test,
+                        end_date__lt=get_now(),
+                    )
+                    .annotate(
+                        score=ExpressionWrapper(
+                            Sum("attemptquestion__points") / Count("attemptquestion") * F("test__score"),
+                            output_field=FloatField(),
+                        ),
+                        time_taken=F("end_date") - F("start_date"),
+                    )
+                    .order_by("end_date")
+                )
+            )
+        )
+        .order_by("full_name")
+    )
+
+    return user_answers_qs
+
+
+def attempt_overview_get(*, user: User, attempt_id: int):
+    attempt_qs = (
+        Attempt
+        .objects
+        .filter(
+            test__user=user,
+        )
+        .annotate(
+            score=ExpressionWrapper(
+                Sum("attemptquestion__points") / Count("attemptquestion") * F("test__score"),
+                output_field=FloatField(),
+            ),
+            time_taken=F("end_date") - F("start_date"),
+        )
+        .select_related("user")
+        .prefetch_related(
+            Prefetch(
+                "log_set",
+                queryset=(
+                    Log
+                    .objects
+                    .select_related("question", "question__question", "answer")
+                    .order_by("created_at")
+                )
+            )
+        )
+    )
+
+    attempt = get_object_or_404(attempt_qs, id=attempt_id)
+
+    return attempt

@@ -26,6 +26,8 @@ from tests_website.tests.selectors import (
     attempt_test_details,
     get_user_attempts,
     test_stats,
+    test_user_answers_get,
+    attempt_overview_get,
 )
 
 
@@ -402,4 +404,87 @@ class TestStatsApi(ApiAuthMixin, APIView):
             "attempts": attempts,
             "questions": questions,
         })
+        return Response(serializer.data)
+
+
+class TestUserAttemptsApi(ApiAuthMixin, APIView):
+    class OutputSerializer(serializers.Serializer):
+        test = inline_serializer(many=False, fields={
+            "id": serializers.IntegerField(),
+            "name": serializers.CharField(),
+            "attempts": serializers.FloatField(),
+        })
+        users = inline_serializer(many=True, fields={
+            "id": serializers.IntegerField(),
+            "full_name": serializers.CharField(),
+            "has_ongoing_attempt": serializers.BooleanField(),
+            "attempts_set": inline_serializer(many=True, fields={
+                "id": serializers.IntegerField(),
+                "score": serializers.FloatField(),
+                "start_date": serializers.DateTimeField(),
+                "end_date": serializers.DateTimeField(),
+                "time_taken": serializers.DurationField(),})
+        })
+
+    def get(self, request, test_id):
+        test = get_object_or_404(Test, id=test_id)
+        user_answers = test_user_answers_get(user=self.request.user, test=test)
+        serializer = self.OutputSerializer(
+            {
+                "test": test,
+                "users": user_answers,
+            }
+        )
+        return Response(serializer.data)
+
+
+class AttemptOverviewApi(ApiAuthMixin, APIView):
+    class OutputSerializer(serializers.Serializer):
+        test = inline_serializer(fields={
+            "id": serializers.IntegerField(),
+            "name": serializers.CharField(),
+            "score": serializers.FloatField(),
+        })
+        attempt = inline_serializer(fields={
+            "id": serializers.IntegerField(),
+            "score": serializers.FloatField(),
+            "start_date": serializers.DateTimeField(),
+            "end_date": serializers.DateTimeField(),
+            "time_taken": serializers.DurationField(),
+            "user": inline_serializer(fields={
+                "id": serializers.IntegerField(),
+                "full_name": serializers.CharField(),
+            }),
+            "logs": inline_serializer(many=True, fields={
+                "id": serializers.IntegerField(),
+                "action": serializers.CharField(),
+                "created_at": serializers.DateTimeField(),
+                "question": inline_serializer(many=False, fields={
+                    "id": serializers.IntegerField(),
+                    "order": serializers.IntegerField(),
+                    "type": serializers.CharField(source="question.type"),
+                    "question": serializers.CharField(source="question.question"),
+                }),
+                "answer": inline_serializer(many=False, fields={
+                    "id": serializers.IntegerField(),
+                    "answer": serializers.CharField(),
+                    "question_id": serializers.IntegerField(),
+                    "is_correct": serializers.BooleanField(),
+                })
+            }, source="log_set")
+        })
+
+    def get(self, request, test_id, attempt_id):
+        test = get_object_or_404(Test, id=test_id)
+        if test.user != self.request.user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        attempt = attempt_overview_get(user=self.request.user, attempt_id=attempt_id)
+
+        serializer = self.OutputSerializer(
+            {
+                "test": test,
+                "attempt": attempt,
+            }
+        )
         return Response(serializer.data)
