@@ -250,7 +250,7 @@ def record_question_mark_as_answered(*, attempt_question_id: int, answered: bool
     attempt_question = get_object_or_404(AttemptQuestion, id=attempt_question_id)
     Log.objects.create(
         attempt_id=attempt_question.attempt_id,
-        question_id=attempt_question,
+        question_id=attempt_question.id,
         action=Log.LogAction.MARKED_AS_ANSWERED if answered else Log.LogAction.UNMARKED_AS_ANSWERED
     )
 
@@ -268,4 +268,3 @@ def attempt_finish(user: User, attempt_id: int):
 
     attempt.end_date = get_now()
     attempt.save()
-

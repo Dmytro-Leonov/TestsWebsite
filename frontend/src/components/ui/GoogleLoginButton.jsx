@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { AiOutlineGoogle } from "react-icons/ai";
 import { Button } from "flowbite-react";
 
-const GoogleLoginButton = () => {
+const GoogleLoginButton = ({text="Login", showG=true, size="xs"}) => {
   const openGoogleLoginPage = useCallback(() => {
     const googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     const redirectUri = "auth/login/google/";
@@ -30,11 +30,11 @@ const GoogleLoginButton = () => {
     <Button
       onClick={openGoogleLoginPage}
       className="transition-colors"
-      size={"xs"}
+      size={size}
     >
       <div className="flex items-center gap-1">
-        <AiOutlineGoogle size={18} />
-        Login
+        {showG && <AiOutlineGoogle size={18} />}
+        {text}
       </div>
     </Button>
   );

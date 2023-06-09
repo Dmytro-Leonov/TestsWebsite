@@ -59,7 +59,7 @@ const TestAttempts = () => {
               const [maxScore, minScore] = getMaxAndMinScore(user.attempts_set);
               return (
                 <Accordion.Panel hidden key={user.id}>
-                  <Accordion.Title className="focus:ring-0 dark:focus:ring-0 [&>*:first-child]:w-full">
+                  <Accordion.Title className="focus:!ring-0 dark:focus:ring-0 [&>*:first-child]:w-full">
                     <div className="flex items-center justify-between ">
                       <div className="flex items-center gap-2">
                         <div>{user.full_name}</div>
@@ -108,7 +108,7 @@ const TestAttempts = () => {
                           <span>
                             {formatDateTimeWithTime(attempt.end_date)}
                           </span>
-                          <Link to={`${attempt.id}`} className="text-blue-700 underline">View</Link>
+                          <Link to={`${attempt.id}`} className="text-blue-700 hover:text-blue-800 underline">View</Link>
                         </React.Fragment>
                       ))}
                     </div>)

@@ -350,3 +350,28 @@ def attempt_overview_get(*, user: User, attempt_id: int):
     attempt = get_object_or_404(attempt_qs, id=attempt_id)
 
     return attempt
+
+
+def attempt_questions_get_with_user_answers(*, attempt_id: int):
+    attempt_questions = (
+        AttemptQuestion
+        .objects
+        .filter(
+            attempt_id=attempt_id,
+        )
+        .select_related("question")
+        .prefetch_related(
+            Prefetch(
+                "attemptanswer_set",
+                queryset=(
+                    AttemptAnswer
+                    .objects
+                    .select_related("answer")
+                    .order_by("order")
+                )
+            )
+        )
+        .order_by("order")
+    )
+
+    return attempt_questions

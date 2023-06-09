@@ -39,10 +39,6 @@ const TestStats = () => {
     getTestStats();
   }, [testId]);
 
-  // count of correct answers for each question
-  // count of incorrect answers for each question
-  // count of times each answer was selected / total answers
-
   const getPercentage = (num, total, round = false) => {
     return (
       Number(((num / total) * 100).toFixed(round ? 0 : 2)).toString() + "%"

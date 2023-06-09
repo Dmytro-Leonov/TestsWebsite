@@ -376,7 +376,7 @@ const TestSettings = () => {
           </Select>
         </div>
 
-        <div className="w-full">
+        {/* <div className="w-full">
           <p className=" text-lg">Show answers after test</p>
           <Select
             disabled={!canChangeSensitive}
@@ -386,19 +386,7 @@ const TestSettings = () => {
             <option value={true}>Yes</option>
             <option value={false}>No</option>
           </Select>
-        </div>
-
-        {/* <div className="w-full">
-          <p className=" text-lg">Give extra time</p>
-          <Select
-            value={giveExtraTime}
-            onChange={(e) => setGiveExtraTime(e.target.value)}
-          >
-            <option value={true}>Yes</option>
-            <option value={false}>No</option>
-          </Select>
         </div> */}
-
         <Button
           size={"md"}
           className="w-full"

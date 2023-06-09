@@ -5,7 +5,6 @@ from django.core.validators import MinLengthValidator, MinValueValidator, MaxVal
 from tests_website.common.models import BaseModel
 from tests_website.common.utils import get_now
 
-import uuid
 from datetime import timedelta
 
 

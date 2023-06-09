@@ -2,6 +2,8 @@ import ThemeSwitch from "./ui/ThemeSwitch";
 import { Link, useNavigate } from "react-router-dom";
 import GoogleLoginButton from "./ui/GoogleLoginButton";
 import { Dropdown } from "flowbite-react";
+import { MdOutlineGroup } from "react-icons/md";
+import { BsFillDatabaseFill } from "react-icons/bs";
 
 import { useSelector } from "react-redux";
 import {
@@ -31,7 +33,7 @@ const Header = () => {
   return (
     <header className="shadow">
       <div className="mx-auto flex w-full max-w-screen-xl justify-between p-4">
-        <ul className="flex items-center gap-5">
+        <ul className="flex items-center gap-8">
           <li>
             <Link
               to="/"
@@ -42,20 +44,31 @@ const Header = () => {
           </li>
           {id && (
             <>
-              <li>
+              <li className=" hover:text-gray-700 dark:hover:text-white">
                 <Link
                   to="/tests?tab=created"
-                  className="text-md py-2 font-medium uppercase transition-colors hover:text-gray-700 dark:hover:text-white"
+                  className="text-md flex items-center gap-1 font-medium uppercase transition-colors"
                 >
-                  Tests
+                  <BsFillDatabaseFill />
+                  <span>Tests</span>
                 </Link>
               </li>
-              <li>
+              <li className=" hover:text-gray-700 dark:hover:text-white">
                 <Link
                   to="/groups"
-                  className="text-md py-2 font-medium uppercase transition-colors hover:text-gray-700 dark:hover:text-white"
+                  className="text-md flex items-center gap-1 font-medium uppercase transition-colors"
                 >
-                  Groups
+                  <MdOutlineGroup />
+                  <span>Groups</span>
+                </Link>
+              </li>
+              <li className=" hover:text-gray-700 dark:hover:text-white">
+                <Link
+                  to="/question-pools"
+                  className="text-md flex items-center gap-1 font-medium uppercase transition-colors"
+                >
+                  <BsQuestionSquareFill />
+                  <span>Question Pools</span>
                 </Link>
               </li>
             </>
@@ -66,16 +79,13 @@ const Header = () => {
           {id ? (
             <Dropdown label={fullName} size="xs" className="py-1">
               <Dropdown.Header>
-                <span className="block text-sm">{(fullName)}</span>
+                <span className="block text-sm">{fullName}</span>
                 <span className="block truncate text-sm font-medium">
                   {email}
                 </span>
               </Dropdown.Header>
               <Link to="/profile">
                 <Dropdown.Item icon={HiUser}>Profile</Dropdown.Item>
-              </Link>
-              <Link to="/question-pools">
-                <Dropdown.Item icon={BsQuestionSquareFill}>Question Pools</Dropdown.Item>
               </Link>
               <Dropdown.Divider />
               <button onClick={() => logout()} className="w-full">

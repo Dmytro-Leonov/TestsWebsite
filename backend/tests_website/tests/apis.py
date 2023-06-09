@@ -16,6 +16,7 @@ from tests_website.tests.services import (
     record_answer_select,
     attempt_question_mark_as_answered,
     attempt_finish,
+    record_question_mark_as_answered,
 )
 from tests_website.tests.selectors import (
     test_list_created_by_user,
@@ -28,6 +29,7 @@ from tests_website.tests.selectors import (
     test_stats,
     test_user_answers_get,
     attempt_overview_get,
+    attempt_questions_get_with_user_answers,
 )
 
 
@@ -329,7 +331,7 @@ class AttemptQuestionMarkAsAnswered(ApiAuthMixin, APIView):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         attempt_question_mark_as_answered(attempt_question_id=attempt_question_id, **serializer.validated_data)
-        attempt_question_mark_as_answered(attempt_question_id=attempt_question_id, **serializer.validated_data)
+        record_question_mark_as_answered(attempt_question_id=attempt_question_id, **serializer.validated_data)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -473,6 +475,18 @@ class AttemptOverviewApi(ApiAuthMixin, APIView):
                 })
             }, source="log_set")
         })
+        questions = inline_serializer(many=True, fields={
+            "id": serializers.IntegerField(),
+            "order": serializers.IntegerField(),
+            "type": serializers.CharField(source="question.type"),
+            "question": serializers.CharField(source="question.question"),
+            "answers": inline_serializer(many=True, fields={
+                "id": serializers.IntegerField(),
+                "answer": serializers.CharField(source="answer.answer"),
+                "is_selected": serializers.BooleanField(),
+                "is_correct": serializers.BooleanField(source="answer.is_correct"),
+            }, source="attemptanswer_set"),
+        })
 
     def get(self, request, test_id, attempt_id):
         test = get_object_or_404(Test, id=test_id)
@@ -480,11 +494,13 @@ class AttemptOverviewApi(ApiAuthMixin, APIView):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         attempt = attempt_overview_get(user=self.request.user, attempt_id=attempt_id)
+        attempt_questions = attempt_questions_get_with_user_answers(attempt_id=attempt_id)
 
         serializer = self.OutputSerializer(
             {
                 "test": test,
                 "attempt": attempt,
+                "questions": attempt_questions,
             }
         )
         return Response(serializer.data)

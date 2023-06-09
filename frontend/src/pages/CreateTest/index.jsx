@@ -55,7 +55,7 @@ const CreateTest = () => {
   const [shuffleAnswers, setShuffleAnswers] = useState(true);
   const [showScoreAfterTest, setShowScoreAfterTest] = useState(false);
   const [showAnswersAfterTest, setShowAnswersAfterTest] = useState(false);
-  const [giveExtraTime, setGiveExtraTime] = useState(false);
+  // const [giveExtraTime, setGiveExtraTime] = useState(false);
 
   const [questionPools, setQuestionPools] = useState([]);
 
@@ -330,7 +330,7 @@ const CreateTest = () => {
           </Select>
         </div>
 
-        <div className="w-1/2 min-w-[300px] max-w-[450px]">
+        {/* <div className="w-1/2 min-w-[300px] max-w-[450px]">
           <p className=" text-lg">Show answers after test</p>
           <Select
             value={showAnswersAfterTest}
@@ -339,7 +339,7 @@ const CreateTest = () => {
             <option value={true}>Yes</option>
             <option value={false}>No</option>
           </Select>
-        </div>
+        </div> */}
 
         {/* <div className="w-1/2 min-w-[300px] max-w-[450px]">
           <p className=" text-lg">Give extra time</p>
