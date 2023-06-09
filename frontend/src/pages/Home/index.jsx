@@ -41,7 +41,7 @@ function Home() {
       </div>
       <div>
         <h2 className="my-5 text-center text-2xl font-bold">
-          Why should you choos us?
+          Why should you choose us?
         </h2>
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
           <div className="flex flex-col items-center gap-1">

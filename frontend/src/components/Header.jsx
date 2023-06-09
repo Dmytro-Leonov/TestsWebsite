@@ -58,7 +58,7 @@ const Header = () => {
                   to="/groups"
                   className="text-md flex items-center gap-1 font-medium uppercase transition-colors"
                 >
-                  <MdOutlineGroup />
+                  <MdOutlineGroup size={20} />
                   <span>Groups</span>
                 </Link>
               </li>
